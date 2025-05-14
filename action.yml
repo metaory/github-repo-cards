@@ -1,0 +1,78 @@
+name: 'Repo Card Generator'
+description: 'Generate SVG cards for GitHub repositories and commit them to the repo'
+author: 'metaory'
+
+inputs:
+  repositories:
+    description: 'List of repository names (newline-separated, username not required)'
+    required: true
+
+  overrides:
+    description: 'Line-separated overrides in the form KEY=value. Use D: or L: prefix for dark/light mode, e.g. D:BG=#222, L:FG=#fff, RADIUS=10, BORDER=7. (No dark:/light: prefixes)'
+    required: false
+
+  output:
+    description: 'Output directory to save the cards'
+    required: false
+    default: 'cards'
+    
+  dev-mode:
+    description: 'Generate development versions with embedded fonts (no text-to-path conversion)'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install jq
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y jq
+
+    - name: Install curl
+      shell: bash
+      run: sudo apt-get install -y curl
+
+    - name: Install custom TTF fonts
+      shell: bash
+      run: |
+        mkdir -p ~/.fonts
+        wget -O ~/.fonts/BungeeShade.ttf https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf
+        wget -O ~/.fonts/Baloo2-Regular.ttf https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
+        wget -O ~/.fonts/Baloo2-Bold.ttf https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
+        fc-cache -f -v
+
+    - name: Install Inkscape
+      shell: bash
+      run: sudo apt-get install -y inkscape
+
+    - name: Create temp directory
+      shell: bash
+      run: mkdir -p /tmp/repo-cards
+
+    - name: Run card generator
+      shell: bash
+      run: |
+        scripts/generate.sh \
+          --repos "$(tr '\n' ' ' <<< "${{ inputs.repositories }}")" \
+          --overrides "$(tr '\n' ' ' <<< "${{ inputs.overrides }}")" \
+          --output "${{ inputs.output }}"
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        
+    - name: Commit and push changes
+      shell: bash
+      run: |
+        if [[ -n "$(git status --porcelain ${{ inputs.output }})" ]]; then
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git add ${{ inputs.output }}
+          git commit -m "chore: update repository cards"
+          git push
+          echo "✅ Changes committed and pushed"
+        else
+          echo "No changes to commit"
+        fi
+
+branding:
+  icon: 'image'
+  color: 'green'

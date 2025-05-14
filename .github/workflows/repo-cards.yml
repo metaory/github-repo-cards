@@ -1,0 +1,37 @@
+name: Generate Repository Cards
+
+# Dogfooding
+# uses its own action as usage example
+
+on:
+  workflow_dispatch:  # Allow manual triggers
+  schedule:
+    - cron: '0 0 * * 1'  # Weekly on Mondays
+
+permissions:
+  contents: write  # Needed for pushing changes
+
+jobs:
+  generate-cards:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Generate repository cards
+        uses: metaory@repo-card-generator
+        with:
+          repositories: |
+            repo-cards
+            dotfiles
+          overrides: |
+            DARK_BG=#F6FFFA
+            DARK_FG=#222333
+            DARK_HL=#FF88EE
+            RADIUS=10
+            BORDER=7
+          output: cards
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
