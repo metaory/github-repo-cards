@@ -61,28 +61,44 @@ done
   usage
 }
 
+for cmd in jq gh curl base64 envsubst inkscape; do
+  command -v "$cmd" >/dev/null || {
+    echo "missing: $cmd" >&2
+    exit 127
+  }
+done
+
 TMP=$(mktemp -d)
 function cleanup { rm -rf "$TMP"; }
 trap cleanup EXIT
 
 mkdir "${OUTPUT_DIR}" &>/dev/null || :
 
-echo "tmp        : $TMP"
-echo "DEV        : $DEV"
-echo "OWNER      : $OWNER"
-echo "REPOS      : $REPOS"
-echo "OVERRIDES  : $OVERRIDES"
-echo "OUTPUT_DIR : $OUTPUT_DIR"
+function logheader {
+  printf '\n\033[1;36m╭─[ SETUP ]──────────────────────────────╶╴╴\033[0m\n'
+  for var; do
+    printf '\033[1;36m│\033[0m %-10s : \033[1m%s\033[0m\n' "$var" "${!var}"
+  done
+  printf '\033[1;36m╰──────────────────────────────────╶╶╶╶╶╶╶╴\033[0m\n'
+}
 
 function fetch_repo {
   local repo="$1"
 
   if $DEV; then
-    jq -n --arg repo "$repo" '{name:$repo,desc:"Mock description",lang:"JavaScript",star:42,fork:7}'
+    jq -n --arg repo "$repo" \
+      '{
+         name:$repo,
+         desc:"Everyone has the right to freedom of thought, opinion, conscience and expression religion; this right includes freedom to change his religion or belief, and freedom, either alone or in community with others and in public or private, to manifest his religion or belief in teaching, practice, worship and observance",
+         lang:"Lua",
+         star:42,
+         fork:7
+       }'
     return
   fi
 
-  gh repo view "$OWNER/$repo" --json name,description,primaryLanguage,stargazerCount,forkCount \
+  gh repo view "$OWNER/$repo" \
+    --json name,description,primaryLanguage,stargazerCount,forkCount \
     --jq '{
             name: .name,
             desc: (.description // "—"),
@@ -130,6 +146,8 @@ function generate {
       --export-filename="./${OUTPUT_DIR}/${filename}.png"
   done
 }
+
+logheader TMP DEV OWNER REPOS OVERRIDES OUTPUT_DIR
 
 for repo in $REPOS; do
   echo "processing $repo ..."
