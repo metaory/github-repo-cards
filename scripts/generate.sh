@@ -15,6 +15,8 @@ function usage {
 Usage:
   --repos NAME...    Space separated repositories (required)
   --overrides EXT    Space separated overrides
+  --fonts EXT        Space separated fonts
+  --logo EXT         Logo dicebear options
   --output DIR       Output directory (default: cards)
   --dev              Use mock data (no GitHub API)
   -h, --help         Show this help
@@ -28,6 +30,8 @@ DEV=false
 OWNER="${GITHUB_ACTOR:-$(git config user.name)}"
 OUTPUT_DIR=cards
 OVERRIDES=
+LOGO='glass/svg?backgroundType=gradientLinear&radius=20'
+FONTS=
 REPOS=
 
 while [[ $# -gt 0 ]]; do
@@ -38,6 +42,14 @@ while [[ $# -gt 0 ]]; do
     ;;
   --overrides)
     OVERRIDES="$2"
+    shift 2
+    ;;
+  --logo)
+    LOGO="$2"
+    shift 2
+    ;;
+  --fonts)
+    FONTS="$2"
     shift 2
     ;;
   --output)
@@ -72,14 +84,23 @@ TMP=$(mktemp -d)
 function cleanup { rm -rf "$TMP"; }
 trap cleanup EXIT
 
-mkdir "${OUTPUT_DIR}" &>/dev/null || :
+mkdir -p "${OUTPUT_DIR}" &>/dev/null || :
 
 function logheader {
-  printf '\n\033[1;36m╭─[ SETUP ]──────────────────────────────╶╴╴\033[0m\n'
+  printf '\n\033[1;36m╭─[ SETUP ]────────────────╴───╶╴──╶╴╴\033[0m\n'
   for var; do
     printf '\033[1;36m│\033[0m %-10s : \033[1m%s\033[0m\n' "$var" "${!var}"
   done
-  printf '\033[1;36m╰──────────────────────────────────╶╶╶╶╶╶╶╴\033[0m\n'
+  printf '\033[1;36m╰─────────────────────────────────╴─╴─╴╴╴╴\033[0m\n'
+}
+
+function setup_fonts {
+# TODO: ...
+  mkdir -p ~/.fonts
+  wget -O ~/.fonts/BungeeShade.ttf https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf
+  wget -O ~/.fonts/Baloo2-Regular.ttf https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
+  wget -O ~/.fonts/Baloo2-Bold.ttf https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
+  fc-cache -f -v
 }
 
 function fetch_repo {
@@ -109,7 +130,7 @@ function fetch_repo {
 }
 
 function printlogo {
-  read -r img < <(curl -s "https://api.dicebear.com/9.x/glass/svg?backgroundType=gradientLinear&radius=20&seed=$1" | base64 -w0)
+  read -r img < <(curl -s "https://api.dicebear.com/9.x/${LOGO}&seed=$1" | base64 -w0)
   printf '<image x="0" y="0" width="96" height="96" href="data:image/svg+xml;base64,%s"/>\n' "$img"
 }
 
@@ -147,7 +168,7 @@ function generate {
   done
 }
 
-logheader TMP DEV OWNER REPOS OVERRIDES OUTPUT_DIR
+logheader TMP DEV OWNER REPOS OVERRIDES FONTS OUTPUT_DIR
 
 for repo in $REPOS; do
   echo "processing $repo ..."

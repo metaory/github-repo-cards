@@ -2,7 +2,7 @@
   <rect x="0" y="0" width="450" height="300" rx="32" fill="${BG}" />
 
   <!-- Header row: avatar + title -->
-  <g transform="translate(48,70)"> ${logo} <flowRoot font-family="BungeeShade" font-size="44px"
+  <g transform="translate(48,70)"> ${logo} <flowRoot font-family="Bungee Shade" font-size="44px"
       font-weight="400">
       <flowRegion>
         <rect x="120" y="-20" width="282" height="100" />
@@ -12,7 +12,7 @@
   </g>
 
   <!-- Description row: full width -->
-  <flowRoot transform="translate(48,190)" font-family="Baloo2" font-size="26px" font-weight="400"
+  <flowRoot transform="translate(48,190)" font-family="Baloo2" font-size="26px" font-weight="600"
     fill="${FG}">
     <flowRegion>
       <rect x="0" y="-26" width="354" height="72" />

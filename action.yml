@@ -8,14 +8,22 @@ inputs:
     required: true
 
   overrides:
-    description: 'Line-separated overrides in the form KEY=value. Use D: or L: prefix for dark/light mode, e.g. D:BG=#222, L:FG=#fff, RADIUS=10, BORDER=7. (No dark:/light: prefixes)'
+    description: 'Line-separated overrides in the form KEY=value. Use D: or L: prefix for dark/light mode, e.g. DARK_BG=#FF3399, LIGHT_FG=#EE5566, RADIUS=10, BORDER=7'
+    required: false
+
+  fonts:
+    description: 'Optional: Section-specific font config. Each line: section=alias:weight@url-to-ttf (see README)'
+    required: false
+
+  logo:
+    description: 'Optional: Custom DiceBear URL (query string, seed will be set automatically). See https://www.dicebear.com/styles/'
     required: false
 
   output:
     description: 'Output directory to save the cards'
     required: false
     default: 'cards'
-    
+
   dev-mode:
     description: 'Generate development versions with embedded fonts (no text-to-path conversion)'
     required: false
@@ -32,15 +40,6 @@ runs:
       shell: bash
       run: sudo apt-get install -y curl
 
-    - name: Install custom TTF fonts
-      shell: bash
-      run: |
-        mkdir -p ~/.fonts
-        wget -O ~/.fonts/BungeeShade.ttf https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf
-        wget -O ~/.fonts/Baloo2-Regular.ttf https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
-        wget -O ~/.fonts/Baloo2-Bold.ttf https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
-        fc-cache -f -v
-
     - name: Install Inkscape
       shell: bash
       run: sudo apt-get install -y inkscape
@@ -55,10 +54,11 @@ runs:
         scripts/generate.sh \
           --repos "$(tr '\n' ' ' <<< "${{ inputs.repositories }}")" \
           --overrides "$(tr '\n' ' ' <<< "${{ inputs.overrides }}")" \
+          --fonts "$(tr '\n' ' ' <<< "${{ inputs.fonts }}")" \
           --output "${{ inputs.output }}"
       env:
         GITHUB_TOKEN: ${{ github.token }}
-        
+
     - name: Commit and push changes
       shell: bash
       run: |

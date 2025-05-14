@@ -26,6 +26,8 @@ jobs:
           repositories: |
             repo-cards
             dotfiles
+          fonts: |
+            header=fredoka:600@https://cdn.jsdelivr.net/fontsource/fonts/fredoka-one@latest/latin-400-normal.ttf
           overrides: |
             DARK_BG=#F6FFFA
             DARK_FG=#222333
