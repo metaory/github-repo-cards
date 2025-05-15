@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
+# ───────────────[ TRAP ]───────────────
 function on_error {
   local exit_code=$?
   local line_no=$1
@@ -10,6 +11,7 @@ function on_error {
 
 trap 'on_error $LINENO "$BASH_COMMAND"' ERR
 
+# ───────────────[ HELP ]───────────────
 function usage {
   cat <<EOF
 Usage:
@@ -24,8 +26,24 @@ EOF
   exit 0
 }
 
-function log { printf '[%s] %s\n' "$(date '+%H:%M:%S')" "$*"; }
+# ───────────────[ DEBUG ]───────────────
+function log {
+  tput setaf 5
+  printf ' [%03d:' "${BASH_LINENO[0]}"
+  printf '%.4s]' "${FUNCNAME[1]:-main}"
+  tput setaf 6
+  printf ' %s\n' "$*"
+  tput sgr0
+}
+function logheader {
+  printf '\n\033[1;36m╭─[ SETUP ]────────────────╴───╶╴──╶╴╴\033[0m\n'
+  for var; do
+    printf '\033[1;36m│\033[0m %-10s : \033[1m%s\033[0m\n' "$var" "${!var}"
+  done
+  printf '\033[1;36m╰─────────────────────────────────╴─╴─╴╴╴╴\033[0m\n'
+}
 
+# ───────────────[ STATE ]───────────────
 DEV=false
 OWNER="${GITHUB_ACTOR:-$(git config user.name)}"
 OUTPUT_DIR=cards
@@ -68,41 +86,53 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# ───────────────[ ASSERTS ]───────────────
 [[ -z $REPOS ]] && {
   log "❌ --repos required"
   usage
 }
-
 for cmd in jq gh curl base64 envsubst inkscape; do
   command -v "$cmd" >/dev/null || {
-    echo "missing: $cmd" >&2
+    log "missing: $cmd" >&2
     exit 127
   }
 done
 
+# ───────────────[ SETUP ]───────────────
 TMP=$(mktemp -d)
 function cleanup { rm -rf "$TMP"; }
 trap cleanup EXIT
-
 mkdir -p "${OUTPUT_DIR}" &>/dev/null || :
 
-function logheader {
-  printf '\n\033[1;36m╭─[ SETUP ]────────────────╴───╶╴──╶╴╴\033[0m\n'
-  for var; do
-    printf '\033[1;36m│\033[0m %-10s : \033[1m%s\033[0m\n' "$var" "${!var}"
-  done
-  printf '\033[1;36m╰─────────────────────────────────╴─╴─╴╴╴╴\033[0m\n'
-}
-
-function setup_fonts {
-# TODO: ...
+# ───────────────[ OPTIONS ]───────────────
+function load_font {
+  # TODO: ...
   mkdir -p ~/.fonts
   wget -O ~/.fonts/BungeeShade.ttf https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf
   wget -O ~/.fonts/Baloo2-Regular.ttf https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
   wget -O ~/.fonts/Baloo2-Bold.ttf https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
   fc-cache -f -v
 }
+# ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶
+function load_logo {
+  read -r img < <(curl -s "https://api.dicebear.com/9.x/${LOGO}&seed=$1" | base64 -w0)
+  printf '<image x="0" y="0" width="96" height="96" href="data:image/svg+xml;base64,%s"/>\n' "$img"
+}
+# ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶
+function load_theme {
+  local scheme="${1:?BAD}"
+  set -a
+  # shellcheck disable=SC1090
+  source <(
+    {
+      cat templates/default.env
+      tr ' ' '\n' <<<"$OVERRIDES"
+    } | sed "/^$/d;s/${scheme^^}_//g"
+  )
+  set +a
+}
 
+# ───────────────[ CORE ]───────────────
 function fetch_repo {
   local repo="$1"
 
@@ -128,35 +158,17 @@ function fetch_repo {
             fork: .forkCount
           }'
 }
-
-function printlogo {
-  read -r img < <(curl -s "https://api.dicebear.com/9.x/${LOGO}&seed=$1" | base64 -w0)
-  printf '<image x="0" y="0" width="96" height="96" href="data:image/svg+xml;base64,%s"/>\n' "$img"
-}
-
-function loadtheme {
-  local scheme="${1:?BAD}"
-  set -a
-  # shellcheck disable=SC1090
-  source <(
-    {
-      cat templates/default.env
-      tr ' ' '\n' <<<"$OVERRIDES"
-    } | sed "/^$/d;s/${scheme^^}_//g"
-  )
-  set +a
-}
-
+# ╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴
 function generate {
   IFS=$'\t' read -r name desc lang star fork < <(jq -r '[.name, .desc, .lang, .star, .fork] | @tsv' <<<"$1")
 
-  logo="$(printlogo "${name}")"
+  logo="$(load_logo "${name}")"
 
   export name desc lang star fork logo
 
   for scheme in light dark; do
-    echo "scheme $scheme"
-    loadtheme "$scheme"
+    log "scheme $scheme"
+    load_theme "$scheme"
     filename="card_${name}_${scheme}"
 
     envsubst <templates/default.svg >"${TMP}/${filename}.svg"
@@ -168,9 +180,11 @@ function generate {
   done
 }
 
+# ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶
 logheader TMP DEV OWNER REPOS OVERRIDES FONTS OUTPUT_DIR
 
+# ───────────────[ DRIVER ]───────────────
 for repo in $REPOS; do
-  echo "processing $repo ..."
+  log "processing $repo ..."
   generate "$(fetch_repo "$repo")"
 done

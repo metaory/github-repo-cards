@@ -55,6 +55,7 @@ runs:
           --repos "$(tr '\n' ' ' <<< "${{ inputs.repositories }}")" \
           --overrides "$(tr '\n' ' ' <<< "${{ inputs.overrides }}")" \
           --fonts "$(tr '\n' ' ' <<< "${{ inputs.fonts }}")" \
+          --logo "$(tr '\n' ' ' <<< "${{ inputs.logo }}")" \
           --output "${{ inputs.output }}"
       env:
         GITHUB_TOKEN: ${{ github.token }}
