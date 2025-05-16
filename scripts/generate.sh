@@ -18,7 +18,15 @@ function on_error {
   printf '[%s] ❌ ERROR at line %s: %s (exit %s)\n' "$(date '+%H:%M:%S')" "$line_no" "$cmd" "$exit_code" >&2
 }
 
+function cleanup { 
+  log "Cleaning up temporary files..."
+  [[ -d "$TMP" ]] && rm -rf "$TMP"
+}
+
+# Set up trap handling
 trap 'on_error $LINENO "$BASH_COMMAND"' ERR
+trap cleanup EXIT
+trap 'log "Interrupted"; cleanup; exit 1' INT
 
 # ───────────────[ HELP ]───────────────
 function usage {
@@ -93,17 +101,15 @@ done
   log "❌ --repos required"
   usage
 }
-for cmd in jq gh curl base64 envsubst inkscape; do
+for cmd in jq gh curl base64 envsubst inkscape dicebear; do
   command -v "$cmd" >/dev/null || {
-    log "missing: $cmd" >&2
+    log "❌ missing: $cmd" >&2
     exit 127
   }
 done
 
 # ───────────────[ SETUP ]───────────────
 TMP=$(mktemp -d)
-function cleanup { rm -rf "$TMP"; }
-trap cleanup EXIT
 mkdir -p "${OUTPUT_DIR}" &>/dev/null || :
 
 # ───────────────────────────────────────
@@ -118,9 +124,35 @@ function load_font {
   S_FONT="sans-serif" S_WEIGHT="400"
   
   for font_def in $FONTS; do
-    IFS="=:@" read -r section alias weight url <<<"${font_def/=/:/@/}"
+    # Check basic format first
+    [[ "$font_def" == *=*:*@* ]] || { 
+      log "Invalid font format: $font_def"
+      continue
+    }
     
-    [[ ! "$section" =~ ^(head|body|stat)$ || -z "$url" || ! "$url" =~ \.ttf$ ]] && continue
+    # Parse using parameter expansion
+    section="${font_def%%=*}"
+    rest="${font_def#*=}"
+    alias="${rest%%:*}"
+    rest="${rest#*:}"
+    weight="${rest%%@*}"
+    url="${rest#*@}"
+    
+    # Validate parts
+    [[ -z "$section" || -z "$alias" || -z "$weight" || -z "$url" ]] && {
+      log "Missing component in font definition: $font_def"
+      continue
+    }
+    
+    [[ ! "$section" =~ ^(head|body|stat)$ ]] && {
+      log "Invalid section '$section' (must be head, body, or stat)"
+      continue
+    }
+    
+    [[ ! "$url" =~ \.ttf$ ]] && {
+      log "URL must end with .ttf: $url"
+      continue
+    }
     
     filename="${section}_$(basename "$url")"
     font_path=~/.local/share/fonts/TTF/"$filename"
