@@ -108,7 +108,7 @@ mkdir -p "${OUTPUT_DIR}" &>/dev/null || :
 # ───────────────[ FONTS ]───────────────
 function load_font {
   log "Loading fonts..."
-  mkdir -p ~/.fonts "${TMP}/fonts"
+  mkdir -p ~/.local/share/fonts/TTF "${TMP}/fonts"
   
   # Default values
   HEAD_FONT_NAME="bungee" HEAD_FONT_WEIGHT="700"
@@ -121,10 +121,10 @@ function load_font {
     [[ ! "$section" =~ ^(head|body|stat)$ || -z "$url" || ! "$url" =~ \.ttf$ ]] && continue
     
     filename="${section}_$(basename "$url")"
-    if curl -s -f -o ~/.fonts/"$filename" "$url"; then
-      cp ~/.fonts/"$filename" "${TMP}/fonts/"
+    if curl -s -f -o ~/.local/share/fonts/TTF/"$filename" "$url"; then
+      cp ~/.local/share/fonts/TTF/"$filename" "${TMP}/fonts/"
       
-      font_family=$(fc-scan --format='%{family}\n' ~/.fonts/"$filename" | head -n1)
+      font_family=$(fc-scan --format='%{family}\n' ~/.local/share/fonts/TTF/"$filename" | head -n1)
       
       case "$section" in
         head) HEAD_FONT_NAME="${font_family:-$alias}" HEAD_FONT_WEIGHT="$weight" ;;

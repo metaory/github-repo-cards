@@ -197,6 +197,19 @@ fonts: |
 - If you only customize some sections (e.g., just `head`), other sections will use default fonts
 - Missing fonts fall back to sans-serif
 
+**How to Find Fonts:**
+1. **Fontsource** (Recommended): Browse [Fontsource](https://fontsource.org/fonts) for fonts
+   - Find your desired font and click on it
+   - Look for the "CDN Links" section and copy the URL ending with `.ttf`
+   - Example URL format: `https://cdn.jsdelivr.net/fontsource/fonts/font-name@latest/latin-400-normal.ttf`
+   - Change `400` to your desired weight (if available)
+
+2. **Google Fonts**: Use [Google Fonts](https://fonts.google.com/)
+   - Select a font you like
+   - Google Fonts can be accessed via Fontsource using the same pattern as above
+
+3. **Direct TTF Files**: You can use any direct URL to a `.ttf` file
+
 **Example: Mix Different Fonts**
 ```yaml
 fonts: |
