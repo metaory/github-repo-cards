@@ -110,8 +110,8 @@ mkdir -p "${OUTPUT_DIR}" &>/dev/null || :
 # ───────────────[ FONTS ]───────────────
 function load_font {
   log "Loading fonts..."
-  mkdir -p ~/.local/share/fonts/TTF "${TMP}/fonts"
-
+  mkdir -p ~/.local/share/fonts/TTF
+  
   # Initialize with sans-serif fallbacks
   H_FONT="sans-serif" H_WEIGHT="700"
   B_FONT="sans-serif" B_WEIGHT="400" 
@@ -123,18 +123,26 @@ function load_font {
     [[ ! "$section" =~ ^(head|body|stat)$ || -z "$url" || ! "$url" =~ \.ttf$ ]] && continue
     
     filename="${section}_$(basename "$url")"
-    if curl -s -f -o ~/.local/share/fonts/TTF/"$filename" "$url"; then
-      cp ~/.local/share/fonts/TTF/"$filename" "${TMP}/fonts/"
-      
-      font_family=$(fc-scan --format='%{family}\n' ~/.local/share/fonts/TTF/"$filename" | head -n1)
-      font_family=${font_family:-$alias}
-      
-      case "$section" in
-        head) H_FONT="$font_family" H_WEIGHT="$weight" ;;
-        body) B_FONT="$font_family" B_WEIGHT="$weight" ;;
-        stat) S_FONT="$font_family" S_WEIGHT="$weight" ;;
-      esac
+    font_path=~/.local/share/fonts/TTF/"$filename"
+    
+    if [[ ! -f "$font_path" ]]; then
+      log "Downloading font: $url"
+      curl -f -o "$font_path" "$url" || {
+        log "❌ Failed to download font: $url"
+        continue
+      }
+    else
+      log "Font already exists: $filename"
     fi
+    
+    font_family=$(fc-scan --format='%{family}\n' "$font_path" | head -n1)
+    font_family=${font_family:-$alias}
+    
+    case "$section" in
+      head) H_FONT="$font_family" H_WEIGHT="$weight" ;;
+      body) B_FONT="$font_family" B_WEIGHT="$weight" ;;
+      stat) S_FONT="$font_family" S_WEIGHT="$weight" ;;
+    esac
   done
   
   fc-cache -f
