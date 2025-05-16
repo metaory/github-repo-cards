@@ -242,12 +242,21 @@ function fetch_repo {
       fork: .forkCount
     }'
 }
+
+trunc() {
+  local str="$1" max="$2"
+  [[ ${#str} -gt $max ]] && echo "${str:0:$max-3}..." || echo "$str"
+}
+
 # ──────────────────────────────────────
 # ───────────────[ MAIN ]───────────────
 function generate {
   IFS=$'\t' read -r name desc lang star fork < <(jq -r '[.name, .desc, .lang, .star, .fork] | @tsv' <<<"$1")
 
+  name=$(trunc "$name" 24)
+  desc=$(trunc "$desc" 90)
   logo="$(load_logo "${name}")"
+
   export name desc lang star fork logo
   load_font
 
