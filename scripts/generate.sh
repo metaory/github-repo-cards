@@ -18,7 +18,7 @@ function on_error {
   printf '[%s] ❌ ERROR at line %s: %s (exit %s)\n' "$(date '+%H:%M:%S')" "$line_no" "$cmd" "$exit_code" >&2
 }
 
-function cleanup { 
+function cleanup {
   log "Cleaning up temporary files..."
   [[ -d "$TMP" ]] && rm -rf "$TMP"
 }
@@ -59,7 +59,6 @@ function logheader {
   done
   printf '\033[1;36m╰─────────────────────────────────╴─╴─╴╴╴╴\033[0m\n'
 }
-
 
 # ───────────────[ OPTIONS ]───────────────
 while [[ $# -gt 0 ]]; do
@@ -117,19 +116,19 @@ mkdir -p "${OUTPUT_DIR}" &>/dev/null || :
 function load_font {
   log "Loading fonts..."
   mkdir -p ~/.local/share/fonts/TTF
-  
+
   # Initialize with sans-serif fallbacks
   H_FONT="sans-serif" H_WEIGHT="700"
-  B_FONT="sans-serif" B_WEIGHT="400" 
+  B_FONT="sans-serif" B_WEIGHT="400"
   S_FONT="sans-serif" S_WEIGHT="400"
-  
+
   for font_def in $FONTS; do
     # Check basic format first
-    [[ "$font_def" == *=*:*@* ]] || { 
+    [[ "$font_def" == *=*:*@* ]] || {
       log "Invalid font format: $font_def"
       continue
     }
-    
+
     # Parse using parameter expansion
     section="${font_def%%=*}"
     rest="${font_def#*=}"
@@ -137,26 +136,26 @@ function load_font {
     rest="${rest#*:}"
     weight="${rest%%@*}"
     url="${rest#*@}"
-    
+
     # Validate parts
     [[ -z "$section" || -z "$alias" || -z "$weight" || -z "$url" ]] && {
       log "Missing component in font definition: $font_def"
       continue
     }
-    
+
     [[ ! "$section" =~ ^(head|body|stat)$ ]] && {
       log "Invalid section '$section' (must be head, body, or stat)"
       continue
     }
-    
+
     [[ ! "$url" =~ \.ttf$ ]] && {
       log "URL must end with .ttf: $url"
       continue
     }
-    
+
     filename="${section}_$(basename "$url")"
     font_path=~/.local/share/fonts/TTF/"$filename"
-    
+
     if [[ ! -f "$font_path" ]]; then
       log "Downloading font: $url"
       curl -f -o "$font_path" "$url" || {
@@ -166,17 +165,17 @@ function load_font {
     else
       log "Font already exists: $filename"
     fi
-    
+
     font_family=$(fc-scan --format='%{family}\n' "$font_path" | head -n1)
     font_family=${font_family:-$alias}
-    
+
     case "$section" in
-      head) H_FONT="$font_family" H_WEIGHT="$weight" ;;
-      body) B_FONT="$font_family" B_WEIGHT="$weight" ;;
-      stat) S_FONT="$font_family" S_WEIGHT="$weight" ;;
+    head) H_FONT="$font_family" H_WEIGHT="$weight" ;;
+    body) B_FONT="$font_family" B_WEIGHT="$weight" ;;
+    stat) S_FONT="$font_family" S_WEIGHT="$weight" ;;
     esac
   done
-  
+
   fc-cache -f
   export H_FONT H_WEIGHT B_FONT B_WEIGHT S_FONT S_WEIGHT
 }
