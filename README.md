@@ -7,8 +7,9 @@ Generate modern, GitHub-style PNG cards for your repositories. Minimal, fast, an
 ## Table of Contents
 
 - [Overview](#overview)
+- [Features](#features)
+- [Quick Start](#quick-start)
 - [GitHub Actions Usage](#github-actions-usage)
-  - [Basic Setup](#basic-setup)
   - [Configuration Options](#configuration-options)
 - [Customization](#customization)
   - [Style Overrides](#style-overrides)
@@ -23,11 +24,15 @@ This action generates beautiful, customizable PNG cards for your GitHub reposito
 
 The action handles the entire process: generating the cards, committing them, and pushing them to your repository in one seamless workflow.
 
-For advanced users, a CLI option is also available for local generation and testing.
+## Features
 
-## GitHub Actions Usage
+- ⚡ **PNG output** at 300 DPI – paste straight into READMEs, wikis, blogs
+- 🎨 **Theme-able** via dead-simple `KEY=value` overrides (light/dark aware)
+- 🪄 **Zero dependencies** inside the cards – everything rendered to pixels
+- 🏃 **One-shot** GitHub Action that commits the result back to the repository
+- 🖥 **CLI parity** for local previews or fully-offline usage
 
-### Basic Setup
+## Quick Start
 
 1. Create a `.github/workflows/repo-cards.yml` file in your repository
 2. Add the following content:
@@ -54,15 +59,17 @@ jobs:
 4. Find your generated cards in the `cards` directory (or custom output location)
 5. The action automatically commits and pushes the generated cards to your repository
 
+## GitHub Actions Usage
+
 ### Configuration Options
 
-| Parameter | Required | Description | Default |
-|-----------|----------|-------------|---------|
-| `repositories` | Yes | Newline-separated list of repository names | - |
-| `overrides` | No | Style overrides (colors, sizes, etc.) | - |
-| `fonts` | No | Custom font configurations | - |
-| `logo` | No | Logo style and options | - |
-| `output` | No | Output directory for generated cards (will be committed to repo) | `cards` |
+| Parameter     | Required | Description                                      |
+|---------------|----------|--------------------------------------------------|
+| `repositories`| Yes      | Newline-separated list of repository names       |
+| `overrides`   | No       | Style overrides (colors, sizes, etc.)            |
+| `fonts`       | No       | Custom font configurations                       |
+| `logo`        | No       | Logo style and options                           |
+| `output`      | No       | Output directory for generated cards (default: `cards`) |
 
 <details>
 <summary>Advanced GitHub Action Configuration</summary>
