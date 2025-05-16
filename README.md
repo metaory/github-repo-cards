@@ -23,6 +23,8 @@ This action generates beautiful, customizable PNG cards for your GitHub reposito
 
 The action handles the entire process: generating the cards, committing them, and pushing them to your repository in one seamless workflow.
 
+For advanced users, a CLI option is also available for local generation and testing.
+
 ## GitHub Actions Usage
 
 ### Basic Setup
@@ -237,8 +239,15 @@ style, radius, backgroundType, backgroundColor, baseColor, colorful, lineColor, 
 
 ## CLI Usage
 
+The CLI tool provides a way to generate repository cards locally for testing or custom workflows. It uses the same core engine as the GitHub Action but requires some dependencies to be installed on your system.
+
+Basic usage:
+```sh
+scripts/generate.sh --repos "repo-cards dotfiles"
+```
+
 <details>
-<summary>Using the CLI Tool (Advanced)</summary>
+<summary>Detailed CLI Usage (Advanced)</summary>
 
 ### Requirements
 
