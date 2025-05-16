@@ -1,6 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
+# ───────────────[ DEFAULTS ]───────────────
+DEV=false
+OWNER="${GITHUB_ACTOR:-$(git config user.name)}"
+OUTPUT_DIR=cards
+OVERRIDES=
+LOGO='style=glass radius=28 backgroundType=gradientLinear'
+FONTS='head=bungee:700@https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf body=baloo-bold:800@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf stat=baloo-norm:400@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf'
+REPOS=
+
 # ───────────────[ TRAP ]───────────────
 function on_error {
   local exit_code=$?
@@ -43,15 +52,8 @@ function logheader {
   printf '\033[1;36m╰─────────────────────────────────╴─╴─╴╴╴╴\033[0m\n'
 }
 
-# ───────────────[ STATE ]───────────────
-DEV=false
-OWNER="${GITHUB_ACTOR:-$(git config user.name)}"
-OUTPUT_DIR=cards
-OVERRIDES=
-LOGO='style=glass radius=28 backgroundType=gradientLinear'
-FONTS='head=bungee:700@https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf body=baloo-bold:800@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf stat=baloo-norm:400@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf'
-REPOS=
 
+# ───────────────[ OPTIONS ]───────────────
 while [[ $# -gt 0 ]]; do
   case "$1" in
   --repos)
@@ -109,31 +111,31 @@ mkdir -p "${OUTPUT_DIR}" &>/dev/null || :
 function load_font {
   log "Loading fonts..."
   mkdir -p ~/.local/share/fonts/TTF "${TMP}/fonts"
-  
+
   # Default values
   HEAD_FONT_NAME="bungee" HEAD_FONT_WEIGHT="700"
   BODY_FONT_NAME="baloo-bold" BODY_FONT_WEIGHT="800"
   STAT_FONT_NAME="baloo-norm" STAT_FONT_WEIGHT="400"
-  
+
   for font_def in $FONTS; do
-    IFS="=:@" read -r section alias weight url <<< "${font_def/=/:/@/}"
-    
+    IFS="=:@" read -r section alias weight url <<<"${font_def/=/:/@/}"
+
     [[ ! "$section" =~ ^(head|body|stat)$ || -z "$url" || ! "$url" =~ \.ttf$ ]] && continue
-    
+
     filename="${section}_$(basename "$url")"
     if curl -s -f -o ~/.local/share/fonts/TTF/"$filename" "$url"; then
       cp ~/.local/share/fonts/TTF/"$filename" "${TMP}/fonts/"
-      
+
       font_family=$(fc-scan --format='%{family}\n' ~/.local/share/fonts/TTF/"$filename" | head -n1)
-      
+
       case "$section" in
-        head) HEAD_FONT_NAME="${font_family:-$alias}" HEAD_FONT_WEIGHT="$weight" ;;
-        body) BODY_FONT_NAME="${font_family:-$alias}" BODY_FONT_WEIGHT="$weight" ;;
-        stat) STAT_FONT_NAME="${font_family:-$alias}" STAT_FONT_WEIGHT="$weight" ;;
+      head) HEAD_FONT_NAME="${font_family:-$alias}" HEAD_FONT_WEIGHT="$weight" ;;
+      body) BODY_FONT_NAME="${font_family:-$alias}" BODY_FONT_WEIGHT="$weight" ;;
+      stat) STAT_FONT_NAME="${font_family:-$alias}" STAT_FONT_WEIGHT="$weight" ;;
       esac
     fi
   done
-  
+
   fc-cache -f
   export HEAD_FONT_NAME HEAD_FONT_WEIGHT BODY_FONT_NAME BODY_FONT_WEIGHT STAT_FONT_NAME STAT_FONT_WEIGHT
 }
@@ -141,18 +143,22 @@ function load_font {
 # ───────────────[ LOGO ]───────────────
 function load_logo {
   local style="" args=()
-  
+
   for pair in $LOGO; do
     k=${pair%%=*}
     v=${pair#*=}
+    # shellcheck disable=SC2206
     [[ "$k" = style ]] && style=$v || args+=(--$k "$v")
   done
-  
+
   dicebear "$style" "${args[@]}" --seed "$1" "${TMP}/${1}" >&2
   local svg="${TMP}/${1}/${style}-0.svg"
-  
-  [[ -f "$svg" ]] || { echo ":x: dicebear did not generate $svg" >&2; exit 1; }
-  
+
+  [[ -f "$svg" ]] || {
+    echo ":x: dicebear did not generate $svg" >&2
+    exit 1
+  }
+
   printf '<image x="0" y="0" width="96" height="96" href="data:image/svg+xml;base64,%s"/>' "$(base64 -w0 <"$svg")"
 }
 
@@ -210,12 +216,12 @@ function generate {
     filename="card_${name}_${scheme}"
 
     envsubst <templates/default.svg >"${TMP}/${filename}.svg"
-    
+
     inkscape "${TMP}/${filename}.svg" \
       --export-dpi=300 \
       --export-type=png \
       --export-filename="./${OUTPUT_DIR}/${filename}.png"
-      
+
     log "Generated ${filename}.png"
   done
 }
