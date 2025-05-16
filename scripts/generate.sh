@@ -49,7 +49,7 @@ OWNER="${GITHUB_ACTOR:-$(git config user.name)}"
 OUTPUT_DIR=cards
 OVERRIDES=
 LOGO='style=glass radius=28 backgroundType=gradientLinear'
-FONTS=
+FONTS='head=bungee:700@https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf body=baloo-bold:800@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf stat=baloo-norm:400@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf'
 REPOS=
 
 while [[ $# -gt 0 ]]; do
@@ -117,19 +117,25 @@ function load_font {
 # ───────────────[ LOGO ]───────────────
 function load_logo {
   local style=""
-  local args=""
-
+  local args=()
   for pair in $LOGO; do
     k=${pair%%=*}
     v=${pair#*=}
-    [ "$k" = style ] && style=$v || args+=" --$k '$v'"
+    if [ "$k" = style ]; then
+      style=$v
+    else
+      # shellcheck disable=SC2206
+      args+=(--$k "$v")
+    fi
   done
-
-  dicebear "${style}${args}" --seed "$1" "${TMP}/${1}" &>/dev/null
-
-  read -r img < <(base64 -w0 <"${TMP}/${1}/${style}-0.svg")
-
-  printf '<image x="0" y="0" width="96" height="96" href="data:image/svg+xml;base64,%s"/>\n' "$img"
+  dicebear "$style" "${args[@]}" --seed "$1" "${TMP}/${1}" >&2
+  local svg="${TMP}/${1}/${style}-0.svg"
+  [[ -f "$svg" ]] || {
+    echo ":x: dicebear did not generate $svg" >&2
+    exit 1
+  }
+  base64img=$(base64 -w0 <"$svg")
+  printf '<image x="0" y="0" width="96" height="96" href="data:image/svg+xml;base64,%s"/>' "$base64img"
 }
 # ───────────────[ THEME ]───────────────
 function load_theme {
