@@ -8,7 +8,7 @@ inputs:
     required: true
 
   overrides:
-    description: 'Space-separated overrides in the form KEY=value. Prefix with LIGHT_ or DARK_ for theme-specific values, e.g. DARK_BG=#181825 LIGHT_FG=#cdd6f4 RADIUS=10 BORDER=7'
+    description: 'Style overrides in the form KEY=value. Can be multiple per line. Prefix with LIGHT_ or DARK_ for theme-specific values, e.g. DARK_BG=#181825 LIGHT_FG=#cdd6f4 RADIUS=10 BORDER=7'
     required: false
 
   fonts:
@@ -16,7 +16,7 @@ inputs:
     required: false
 
   logo:
-    description: 'Optional: Custom DiceBear URL (query string, seed will be set automatically). See https://www.dicebear.com/styles/'
+    description: 'Optional: DiceBear avatar configuration options. Style parameter is required (e.g. style=glass). See https://www.dicebear.com/styles/'
     required: false
 
   output:

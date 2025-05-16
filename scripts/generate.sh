@@ -107,12 +107,29 @@ mkdir -p "${OUTPUT_DIR}" &>/dev/null || :
 # ───────────────────────────────────────
 # ───────────────[ FONTS ]───────────────
 function load_font {
-  echo 'TODO: ...'
-  # mkdir -p ~/.fonts
-  # wget -O ~/.fonts/BungeeShade.ttf https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf
-  # wget -O ~/.fonts/Baloo2-Regular.ttf https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
-  # wget -O ~/.fonts/Baloo2-Bold.ttf https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
-  # fc-cache -f -v
+  log "Loading fonts..."
+  mkdir -p ~/.fonts "${TMP}/fonts"
+  
+  declare -A FONT_NAMES FONT_WEIGHTS
+  
+  for font_def in $FONTS; do
+    IFS="=:@" read -r section alias weight url <<< "${font_def/=/:/@/}"
+    
+    [[ ! "$section" =~ ^(head|body|stat)$ ]] && continue
+    [[ -z "$url" || ! "$url" =~ \.ttf$ ]] && continue
+    
+    filename="${section}_$(basename "$url")"
+    if curl -s -f -o ~/.fonts/"$filename" "$url"; then
+      cp ~/.fonts/"$filename" "${TMP}/fonts/"
+      FONT_NAMES[$section]=$alias
+      FONT_WEIGHTS[$section]=$weight
+    fi
+  done
+  
+  fc-cache -f
+  export HEAD_FONT_NAME="${FONT_NAMES[head]:-bungee}" HEAD_FONT_WEIGHT="${FONT_WEIGHTS[head]:-700}"
+  export BODY_FONT_NAME="${FONT_NAMES[body]:-baloo-bold}" BODY_FONT_WEIGHT="${FONT_WEIGHTS[body]:-800}"
+  export STAT_FONT_NAME="${FONT_NAMES[stat]:-baloo-norm}" STAT_FONT_WEIGHT="${FONT_WEIGHTS[stat]:-400}"
 }
 # ───────────────[ LOGO ]───────────────
 function load_logo {
@@ -183,9 +200,7 @@ function generate {
   IFS=$'\t' read -r name desc lang star fork < <(jq -r '[.name, .desc, .lang, .star, .fork] | @tsv' <<<"$1")
 
   logo="$(load_logo "${name}")"
-
   export name desc lang star fork logo
-
   load_font
 
   for scheme in light dark; do
@@ -194,11 +209,13 @@ function generate {
     filename="card_${name}_${scheme}"
 
     envsubst <templates/default.svg >"${TMP}/${filename}.svg"
-
+    
     inkscape "${TMP}/${filename}.svg" \
       --export-dpi=300 \
       --export-type=png \
       --export-filename="./${OUTPUT_DIR}/${filename}.png"
+      
+    log "Generated ${filename}.png"
   done
 }
 

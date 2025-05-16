@@ -41,12 +41,16 @@ The action handles the entire process: generating the cards, committing them, an
 name: Generate Repository Cards
 on:
   workflow_dispatch:
+
+permissions:
+  contents: write  # Needed for pushing changes
+
 jobs:
   generate-cards:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: metaory/repo-card-generator
+      - uses: metaory/repo-card-generator@v1
         with:
           repositories: |
             repo-cards
@@ -70,6 +74,7 @@ jobs:
 | `fonts`       | No       | Custom font configurations                       |
 | `logo`        | No       | Logo style and options                           |
 | `output`      | No       | Output directory for generated cards (default: `cards`) |
+| `dev-mode`    | No       | Generate development versions with embedded fonts (default: `false`) |
 
 <details>
 <summary>Advanced GitHub Action Configuration</summary>
@@ -86,13 +91,16 @@ on:
     paths:
       - '.github/workflows/repo-cards.yml'
 
+permissions:
+  contents: write  # Needed for pushing changes
+
 jobs:
   generate-cards:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       
-      - uses: metaory/repo-card-generator
+      - uses: metaory/repo-card-generator@v1
         with:
           repositories: |
             repo-cards
@@ -121,171 +129,144 @@ jobs:
 
 ### Style Overrides
 
-Basic overrides for colors and styling:
+Simple color and layout adjustments:
 
 ```yaml
 overrides: |
-  BG=#ffffff       # Universal background color
-  FG=#000000       # Universal foreground color
-  RADIUS=10        # Card border radius
-  BORDER=2         # Border width
+  BG=#ffffff  RADIUS=10  # Background & border radius
+  FG=#000000  BORDER=2   # Text color & border width
 ```
 
 <details>
-<summary>Advanced Style Overrides</summary>
+<summary>Detailed Style Options</summary>
 
-You can set different styles for light and dark modes:
+Theme-specific overrides with `LIGHT_` or `DARK_` prefixes:
 
 ```yaml
 overrides: |
-  # Light mode overrides
-  LIGHT_BG=#f0f0f0
-  LIGHT_FG=#1a1a1a
-  LIGHT_HL=#0969da
-  LIGHT_AC=#2da44e
+  # Light mode
+  LIGHT_BG=#f0f0f0  LIGHT_HL=#0969da
+  LIGHT_FG=#1a1a1a  LIGHT_AC=#2da44e
   
-  # Dark mode overrides
-  DARK_BG=#181825
-  DARK_FG=#cdd6f4
-  DARK_HL=#f38ba8
-  DARK_AC=#89b4fa
+  # Dark mode
+  DARK_BG=#181825   DARK_HL=#f38ba8
+  DARK_FG=#cdd6f4   DARK_AC=#89b4fa
   
-  # Universal overrides
-  RADIUS=14
-  BORDER=6
+  # Universal
+  RADIUS=14  BORDER=6
 ```
 
-Available override variables:
-- `RADIUS` - Border radius of the card
-- `BORDER` - Border width of the card
-- `BG` - Background color
-- `FG` - Foreground/text color
-- `HL` - Highlight color (titles, links)
-- `AC` - Accent color (secondary elements)
-
-Prefix any of these with `LIGHT_` or `DARK_` to apply specifically to light or dark mode.
+**Variables:**
+- `BG`: Background color
+- `FG`: Text color
+- `HL`: Highlight color (titles)
+- `AC`: Accent color (icons)
+- `RADIUS`: Card rounded corners
+- `BORDER`: Border thickness
 </details>
 
 ### Fonts
 
-Basic font configuration:
+Custom TTF fonts for `head`, `body` and `stat` sections. Default fonts provided but easily overridden:
 
 ```yaml
 fonts: |
-  head=inter-bold:800@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-800-normal.ttf
+  head=inter:800@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-800-normal.ttf
+  # Only specify sections you want to override - others will use defaults
 ```
 
 <details>
-<summary>Advanced Font Configuration</summary>
+<summary>Font Configuration Details</summary>
 
-You can customize fonts for different sections of the card:
+Format: `section=alias:weight@url`
 
 ```yaml
+# Default fonts
 fonts: |
   head=bungee:700@https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf
   body=baloo-bold:800@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
   stat=baloo-norm:400@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
 ```
 
-Format for each font entry:
-- `section=alias:weight@url-to-ttf`
+**Key Points:**
+- All sections (`head`, `body`, `stat`) support custom fonts
+- Alias is just a reference name; weight doesn't need to match the actual font
+- Only `.ttf` format is supported (other formats may cause issues)
+- If you only customize some sections (e.g., just `head`), other sections will use default fonts
+- Missing fonts fall back to sans-serif
 
-Available sections:
-- `head` - Repository name and headers
-- `body` - Description and general text
-- `stat` - Statistics and metadata
+**Example: Mix Different Fonts**
+```yaml
+fonts: |
+  head=comic:700@https://cdn.jsdelivr.net/fontsource/fonts/comic-neue@latest/latin-700-normal.ttf
+  body=inter:400@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf
+  stat=inter:600@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.ttf
+```
 
-Font resources:
-- [Google Fonts](https://fonts.google.com/)
-- [Fontsource](https://fontsource.org/)
-- [Font Library](https://fontlibrary.org/)
+**Sources:** [Google Fonts](https://fonts.google.com/) | [Fontsource](https://fontsource.org/) | [Font Library](https://fontlibrary.org/)
 </details>
 
 ### Logo Options
 
-Basic logo configuration:
+Set DiceBear avatar style (style parameter is required):
 
 ```yaml
 logo: |
-  style=glass
+  style=glass  # Required parameter!
 ```
 
 <details>
-<summary>Advanced Logo Configuration</summary>
+<summary>Logo Customization</summary>
+
+More options for the DiceBear-generated avatar:
 
 ```yaml
 logo: |
-  style=glass
-  radius=28
+  style=glass           # Required parameter
+  radius=28             # Rounded corners
   backgroundType=gradientLinear
 ```
 
-[!CAUTION]
-> When customizing the logo, the `style` parameter is **mandatory**. 
-> Without it, the logo will not be generated.
+**Key Parameters:**
+- `style`: Avatar style (mandatory)
+- `radius`: Corner roundness
+- `backgroundColor`: Custom background
+- `baseColor`: Primary color
 
+Repository name is used as the seed for consistent generation.
 
-The logo is generated using DiceBear, and you can customize various aspects:
+**Popular Styles:** adventurer, avataaars, bottts, funEmoji, personas, pixelArt, shapes
 
-- `style` - The avatar style to use (see below)
-- `radius` - Border radius of the avatar
-- `backgroundColor` - Background color(s)
-- `baseColor` - Primary color(s)
-
-The `seed` is set automatically based on the repository name.
-
-**Available styles:**
-adventurer, avataaars, bottts, funEmoji, openPeeps, personas, pixelArt, shapes, and many more.
-
-[Browse all DiceBear styles](https://www.dicebear.com/styles/)
+[Browse all styles](https://www.dicebear.com/styles/)
 
 <details>
-<summary>Complete DiceBear Options</summary>
+<summary>All DiceBear Options</summary>
 
 style, radius, backgroundType, backgroundColor, baseColor, colorful, lineColor, flip, rotate, scale, size, backgroundRotation, translateX, translateY, clip, randomizeIds, accessories, accessoriesColor, accessoriesProbability, base, clothesColor, clothing, clothingGraphic, eyebrows, eyes, facialHair, facialHairColor, facialHairProbability, hairColor, hatColor, mouth, nose, skinColor, top, topProbability
-
 </details>
 </details>
 
 ## CLI Usage
 
-The CLI tool provides a way to generate repository cards locally for testing or custom workflows. It uses the same core engine as the GitHub Action but requires some dependencies to be installed on your system.
+Generate cards locally (needs: bash, jq, gh, inkscape):
 
-Basic usage:
 ```sh
 scripts/generate.sh --repos "repo-cards dotfiles"
 ```
 
 <details>
-<summary>Detailed CLI Usage (Advanced)</summary>
-
-### Requirements
-
-For CLI usage, you'll need:
-- Bash
-- jq
-- gh (GitHub CLI)
-- inkscape
-
-### Basic CLI Usage
-
-```sh
-scripts/generate.sh \
-  --repos "repo-cards dotfiles"
-```
-
-### Advanced CLI Usage
+<summary>Advanced CLI Example</summary>
 
 ```sh
 scripts/generate.sh \
   --repos "repo-cards dotfiles" \
-  --overrides "DARK_BG=#181825 DARK_FG=#cdd6f4 RADIUS=14 BORDER=6" \
+  --overrides "DARK_BG=#181825 RADIUS=14" \
   --output assets/cards \
-  --logo "style=glass radius=28 backgroundType=gradientLinear" \
-  --fonts 'head=inter-bold:800@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-800-normal.ttf body=inter-regular:400@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf stat=nabla:400@https://cdn.jsdelivr.net/fontsource/fonts/nabla@latest/latin-400-normal.ttf'
+  --logo "style=glass radius=28" \
+  --fonts 'head=inter:800@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-800-normal.ttf'
 ```
 
-All the customization options available for the GitHub Action are also available via CLI parameters.
+All GitHub Action options are available as CLI parameters with identical format.
 </details>
 
 ## License
