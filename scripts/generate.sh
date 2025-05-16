@@ -48,7 +48,7 @@ DEV=false
 OWNER="${GITHUB_ACTOR:-$(git config user.name)}"
 OUTPUT_DIR=cards
 OVERRIDES=
-LOGO='glass/svg?backgroundType=gradientLinear&radius=20'
+LOGO='style=glass radius=28 backgroundType=gradientLinear'
 FONTS=
 REPOS=
 
@@ -104,21 +104,34 @@ function cleanup { rm -rf "$TMP"; }
 trap cleanup EXIT
 mkdir -p "${OUTPUT_DIR}" &>/dev/null || :
 
-# ───────────────[ OPTIONS ]───────────────
+# ───────────────────────────────────────
+# ───────────────[ FONTS ]───────────────
 function load_font {
-  # TODO: ...
-  mkdir -p ~/.fonts
-  wget -O ~/.fonts/BungeeShade.ttf https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf
-  wget -O ~/.fonts/Baloo2-Regular.ttf https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
-  wget -O ~/.fonts/Baloo2-Bold.ttf https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
-  fc-cache -f -v
+  echo 'TODO: ...'
+  # mkdir -p ~/.fonts
+  # wget -O ~/.fonts/BungeeShade.ttf https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf
+  # wget -O ~/.fonts/Baloo2-Regular.ttf https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
+  # wget -O ~/.fonts/Baloo2-Bold.ttf https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
+  # fc-cache -f -v
 }
-# ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶
+# ───────────────[ LOGO ]───────────────
 function load_logo {
-  read -r img < <(curl -s "https://api.dicebear.com/9.x/${LOGO}&seed=$1" | base64 -w0)
+  local style=""
+  local args=""
+
+  for pair in $LOGO; do
+    k=${pair%%=*}
+    v=${pair#*=}
+    [ "$k" = style ] && style=$v || args+=" --$k '$v'"
+  done
+
+  dicebear "${style}${args}" --seed "$1" "${TMP}/${1}" &>/dev/null
+
+  read -r img < <(base64 -w0 <"${TMP}/${1}/${style}-0.svg")
+
   printf '<image x="0" y="0" width="96" height="96" href="data:image/svg+xml;base64,%s"/>\n' "$img"
 }
-# ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶
+# ───────────────[ THEME ]───────────────
 function load_theme {
   local scheme="${1:?BAD}"
   set -a
@@ -132,7 +145,7 @@ function load_theme {
   set +a
 }
 
-# ───────────────[ CORE ]───────────────
+# ───────────────[ REPO ]───────────────
 function fetch_repo {
   local repo="$1"
 
@@ -158,13 +171,16 @@ function fetch_repo {
             fork: .forkCount
           }'
 }
-# ╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴╶╴
+# ──────────────────────────────────────
+# ───────────────[ MAIN ]───────────────
 function generate {
   IFS=$'\t' read -r name desc lang star fork < <(jq -r '[.name, .desc, .lang, .star, .fork] | @tsv' <<<"$1")
 
   logo="$(load_logo "${name}")"
 
   export name desc lang star fork logo
+
+  load_font
 
   for scheme in light dark; do
     log "scheme $scheme"

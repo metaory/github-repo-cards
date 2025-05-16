@@ -44,6 +44,10 @@ runs:
       shell: bash
       run: sudo apt-get install -y inkscape
 
+    - name: Install Logo maker
+      shell: bash
+      run: npm install dicebear --global
+
     - name: Create temp directory
       shell: bash
       run: mkdir -p /tmp/repo-cards

@@ -108,10 +108,9 @@ jobs:
             body=inter-regular:400@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf
             stat=nabla:400@https://cdn.jsdelivr.net/fontsource/fonts/nabla@latest/latin-400-normal.ttf
           logo: |
-            style=adventurer
+            style=glass
             radius=28
-            backgroundColor=181825,313244
-            baseColor=89b4fa,f38ba8
+            backgroundType=gradientLinear
           output: assets/cards   # Cards will be generated, committed and pushed to this directory
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -208,7 +207,7 @@ Basic logo configuration:
 
 ```yaml
 logo: |
-  style=bottts
+  style=glass
 ```
 
 <details>
@@ -216,11 +215,15 @@ logo: |
 
 ```yaml
 logo: |
-  style=adventurer
+  style=glass
   radius=28
-  backgroundColor=181825,313244
-  baseColor=89b4fa,f38ba8
+  backgroundType=gradientLinear
 ```
+
+[!CAUTION]
+> When customizing the logo, the `style` parameter is **mandatory**. 
+> Without it, the logo will not be generated.
+
 
 The logo is generated using DiceBear, and you can customize various aspects:
 
@@ -278,7 +281,7 @@ scripts/generate.sh \
   --repos "repo-cards dotfiles" \
   --overrides "DARK_BG=#181825 DARK_FG=#cdd6f4 RADIUS=14 BORDER=6" \
   --output assets/cards \
-  --logo "style=adventurer radius=28 backgroundColor=181825,313244 baseColor=89b4fa,f38ba8" \
+  --logo "style=glass radius=28 backgroundType=gradientLinear" \
   --fonts 'head=inter-bold:800@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-800-normal.ttf body=inter-regular:400@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf stat=nabla:400@https://cdn.jsdelivr.net/fontsource/fonts/nabla@latest/latin-400-normal.ttf'
 ```
 
