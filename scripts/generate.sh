@@ -110,50 +110,52 @@ function load_font {
   log "Loading fonts..."
   mkdir -p ~/.fonts "${TMP}/fonts"
   
-  declare -A FONT_NAMES FONT_WEIGHTS
+  # Default values
+  HEAD_FONT_NAME="bungee" HEAD_FONT_WEIGHT="700"
+  BODY_FONT_NAME="baloo-bold" BODY_FONT_WEIGHT="800"
+  STAT_FONT_NAME="baloo-norm" STAT_FONT_WEIGHT="400"
   
   for font_def in $FONTS; do
     IFS="=:@" read -r section alias weight url <<< "${font_def/=/:/@/}"
     
-    [[ ! "$section" =~ ^(head|body|stat)$ ]] && continue
-    [[ -z "$url" || ! "$url" =~ \.ttf$ ]] && continue
+    [[ ! "$section" =~ ^(head|body|stat)$ || -z "$url" || ! "$url" =~ \.ttf$ ]] && continue
     
     filename="${section}_$(basename "$url")"
     if curl -s -f -o ~/.fonts/"$filename" "$url"; then
       cp ~/.fonts/"$filename" "${TMP}/fonts/"
-      FONT_NAMES[$section]=$alias
-      FONT_WEIGHTS[$section]=$weight
+      
+      font_family=$(fc-scan --format='%{family}\n' ~/.fonts/"$filename" | head -n1)
+      
+      case "$section" in
+        head) HEAD_FONT_NAME="${font_family:-$alias}" HEAD_FONT_WEIGHT="$weight" ;;
+        body) BODY_FONT_NAME="${font_family:-$alias}" BODY_FONT_WEIGHT="$weight" ;;
+        stat) STAT_FONT_NAME="${font_family:-$alias}" STAT_FONT_WEIGHT="$weight" ;;
+      esac
     fi
   done
   
   fc-cache -f
-  export HEAD_FONT_NAME="${FONT_NAMES[head]:-bungee}" HEAD_FONT_WEIGHT="${FONT_WEIGHTS[head]:-700}"
-  export BODY_FONT_NAME="${FONT_NAMES[body]:-baloo-bold}" BODY_FONT_WEIGHT="${FONT_WEIGHTS[body]:-800}"
-  export STAT_FONT_NAME="${FONT_NAMES[stat]:-baloo-norm}" STAT_FONT_WEIGHT="${FONT_WEIGHTS[stat]:-400}"
+  export HEAD_FONT_NAME HEAD_FONT_WEIGHT BODY_FONT_NAME BODY_FONT_WEIGHT STAT_FONT_NAME STAT_FONT_WEIGHT
 }
+
 # ───────────────[ LOGO ]───────────────
 function load_logo {
-  local style=""
-  local args=()
+  local style="" args=()
+  
   for pair in $LOGO; do
     k=${pair%%=*}
     v=${pair#*=}
-    if [ "$k" = style ]; then
-      style=$v
-    else
-      # shellcheck disable=SC2206
-      args+=(--$k "$v")
-    fi
+    [[ "$k" = style ]] && style=$v || args+=(--$k "$v")
   done
+  
   dicebear "$style" "${args[@]}" --seed "$1" "${TMP}/${1}" >&2
   local svg="${TMP}/${1}/${style}-0.svg"
-  [[ -f "$svg" ]] || {
-    echo ":x: dicebear did not generate $svg" >&2
-    exit 1
-  }
-  base64img=$(base64 -w0 <"$svg")
-  printf '<image x="0" y="0" width="96" height="96" href="data:image/svg+xml;base64,%s"/>' "$base64img"
+  
+  [[ -f "$svg" ]] || { echo ":x: dicebear did not generate $svg" >&2; exit 1; }
+  
+  printf '<image x="0" y="0" width="96" height="96" href="data:image/svg+xml;base64,%s"/>' "$(base64 -w0 <"$svg")"
 }
+
 # ───────────────[ THEME ]───────────────
 function load_theme {
   local scheme="${1:?BAD}"
@@ -173,26 +175,25 @@ function fetch_repo {
   local repo="$1"
 
   if $DEV; then
-    jq -n --arg repo "$repo" \
-      '{
-         name:$repo,
-         desc:"Everyone has the right to freedom of thought, opinion, conscience and expression religion; this right includes freedom to change his religion or belief, and freedom, either alone or in community with others and in public or private, to manifest his religion or belief in teaching, practice, worship and observance",
-         lang:"Lua",
-         star:42,
-         fork:7
-       }'
+    jq -n --arg repo "$repo" '{
+      name: $repo,
+      desc: "Everyone has the right to freedom of thought, opinion, conscience and expression religion; this right includes freedom to change his religion or belief, and freedom, either alone or in community with others and in public or private, to manifest his religion or belief in teaching, practice, worship and observance",
+      lang: "Lua",
+      star: 42,
+      fork: 7
+    }'
     return
   fi
 
   gh repo view "$OWNER/$repo" \
     --json name,description,primaryLanguage,stargazerCount,forkCount \
     --jq '{
-            name: .name,
-            desc: (.description // "—"),
-            lang: (.primaryLanguage.name // "n/a"),
-            star: .stargazerCount,
-            fork: .forkCount
-          }'
+      name: .name,
+      desc: (.description // "—"),
+      lang: (.primaryLanguage.name // "n/a"),
+      star: .stargazerCount,
+      fork: .forkCount
+    }'
 }
 # ──────────────────────────────────────
 # ───────────────[ MAIN ]───────────────

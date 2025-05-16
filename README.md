@@ -191,6 +191,8 @@ fonts: |
 **Key Points:**
 - All sections (`head`, `body`, `stat`) support custom fonts
 - Alias is just a reference name; weight doesn't need to match the actual font
+- The tool automatically detects the actual font family name from the TTF file
+- If detection fails, it falls back to the provided alias
 - Only `.ttf` format is supported (other formats may cause issues)
 - If you only customize some sections (e.g., just `head`), other sections will use default fonts
 - Missing fonts fall back to sans-serif
