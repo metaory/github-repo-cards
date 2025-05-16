@@ -112,32 +112,33 @@ function load_font {
   log "Loading fonts..."
   mkdir -p ~/.local/share/fonts/TTF "${TMP}/fonts"
 
-  # Default values
-  HEAD_FONT_NAME="bungee" HEAD_FONT_WEIGHT="700"
-  BODY_FONT_NAME="baloo-bold" BODY_FONT_WEIGHT="800"
-  STAT_FONT_NAME="baloo-norm" STAT_FONT_WEIGHT="400"
-
+  # Initialize with sans-serif fallbacks
+  H_FONT="sans-serif" H_WEIGHT="700"
+  B_FONT="sans-serif" B_WEIGHT="400" 
+  S_FONT="sans-serif" S_WEIGHT="400"
+  
   for font_def in $FONTS; do
     IFS="=:@" read -r section alias weight url <<<"${font_def/=/:/@/}"
-
+    
     [[ ! "$section" =~ ^(head|body|stat)$ || -z "$url" || ! "$url" =~ \.ttf$ ]] && continue
-
+    
     filename="${section}_$(basename "$url")"
     if curl -s -f -o ~/.local/share/fonts/TTF/"$filename" "$url"; then
       cp ~/.local/share/fonts/TTF/"$filename" "${TMP}/fonts/"
-
+      
       font_family=$(fc-scan --format='%{family}\n' ~/.local/share/fonts/TTF/"$filename" | head -n1)
-
+      font_family=${font_family:-$alias}
+      
       case "$section" in
-      head) HEAD_FONT_NAME="${font_family:-$alias}" HEAD_FONT_WEIGHT="$weight" ;;
-      body) BODY_FONT_NAME="${font_family:-$alias}" BODY_FONT_WEIGHT="$weight" ;;
-      stat) STAT_FONT_NAME="${font_family:-$alias}" STAT_FONT_WEIGHT="$weight" ;;
+        head) H_FONT="$font_family" H_WEIGHT="$weight" ;;
+        body) B_FONT="$font_family" B_WEIGHT="$weight" ;;
+        stat) S_FONT="$font_family" S_WEIGHT="$weight" ;;
       esac
     fi
   done
-
+  
   fc-cache -f
-  export HEAD_FONT_NAME HEAD_FONT_WEIGHT BODY_FONT_NAME BODY_FONT_WEIGHT STAT_FONT_NAME STAT_FONT_WEIGHT
+  export H_FONT H_WEIGHT B_FONT B_WEIGHT S_FONT S_WEIGHT
 }
 
 # ───────────────[ LOGO ]───────────────

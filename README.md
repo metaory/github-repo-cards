@@ -194,8 +194,7 @@ fonts: |
 - The tool automatically detects the actual font family name from the TTF file
 - If detection fails, it falls back to the provided alias
 - Only `.ttf` format is supported (other formats may cause issues)
-- If you only customize some sections (e.g., just `head`), other sections will use default fonts
-- Missing fonts fall back to sans-serif
+- If you only customize some sections (e.g., just `head`), others will use the default fonts
 
 **How to Find Fonts:**
 1. **Fontsource** (Recommended): Browse [Fontsource](https://fontsource.org/fonts) for fonts
