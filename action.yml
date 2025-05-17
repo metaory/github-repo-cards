@@ -24,11 +24,6 @@ inputs:
     required: false
     default: 'cards'
 
-  dev-mode:
-    description: 'Generate development versions with embedded fonts (no text-to-path conversion)'
-    required: false
-    default: 'false'
-
 runs:
   using: 'composite'
   steps:
@@ -55,16 +50,12 @@ runs:
     - name: Run card generator
       shell: bash
       run: |
-        extra=""
-        [[ "${{ inputs.dev-mode }}" == 'true' ]] && extra="--dev"
-
         scripts/generate.sh \
           --repos "$(tr '\n' ' ' <<< "${{ inputs.repositories }}")" \
           --overrides "$(tr '\n' ' ' <<< "${{ inputs.overrides }}")" \
           --fonts "$(tr '\n' ' ' <<< "${{ inputs.fonts }}")" \
           --logo "$(tr '\n' ' ' <<< "${{ inputs.logo }}")" \
-          --output "${{ inputs.output }}" \
-          $extra
+          --output "${{ inputs.output }}"
       env:
         GITHUB_TOKEN: ${{ github.token }}
 

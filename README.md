@@ -40,6 +40,10 @@ The action handles the entire process: generating the cards, committing them, an
 ```yaml
 name: Generate Repository Cards
 on:
+  # Run weekly to keep cards updated automatically
+  schedule:
+    - cron: '0 0 * * 1'  # Weekly on Mondays
+  # Also allow manual execution when needed
   workflow_dispatch:
 
 permissions:
@@ -74,7 +78,6 @@ jobs:
 | `fonts`       | No       | Custom font configurations                       |
 | `logo`        | No       | Logo style and options                           |
 | `output`      | No       | Output directory for generated cards (default: `cards`) |
-| `dev-mode`    | No       | Generate development versions with embedded fonts (default: `false`) |
 
 <details>
 <summary>Advanced GitHub Action Configuration</summary>
@@ -107,10 +110,8 @@ jobs:
             dotfiles
             my-awesome-project
           overrides: |
-            DARK_BG=#181825
-            DARK_FG=#cdd6f4
-            RADIUS=14
-            BORDER=6
+            DARK_BG=#181825  DARK_FG=#cdd6f4  # Dark mode colors
+            RADIUS=14  BORDER=6               # Card shape properties
           fonts: |
             head=inter-bold:800@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-800-normal.ttf
             body=inter-regular:400@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf
@@ -243,20 +244,34 @@ logo: |
 
 **Key Parameters:**
 - `style`: Avatar style (mandatory)
-- `radius`: Corner roundness
-- `backgroundColor`: Custom background
-- `baseColor`: Primary color
-
-Repository name is used as the seed for consistent generation.
+- `seed`: Determines the avatar pattern (repository name is used when not specified)
+- `radius`: Corner roundness (0-50)
+- `backgroundColor`: Custom background color in hex
+- `backgroundType`: Background type (solid or gradientLinear)
 
 **Popular Styles:** adventurer, avataaars, bottts, funEmoji, personas, pixelArt, shapes
 
 [Browse all styles](https://www.dicebear.com/styles/)
 
 <details>
-<summary>All DiceBear Options</summary>
+<summary>All DiceBear Core Options</summary>
 
-style, radius, backgroundType, backgroundColor, baseColor, colorful, lineColor, flip, rotate, scale, size, backgroundRotation, translateX, translateY, clip, randomizeIds, accessories, accessoriesColor, accessoriesProbability, base, clothesColor, clothing, clothingGraphic, eyebrows, eyes, facialHair, facialHairColor, facialHairProbability, hairColor, hatColor, mouth, nose, skinColor, top, topProbability
+- `style`: Avatar style name (required)
+- `seed`: String to generate consistent avatars
+- `flip`: Boolean to flip horizontally
+- `rotate`: Degree of rotation (0-360)
+- `scale`: Scale percentage (0-200)
+- `radius`: Corner roundness (0-50)
+- `size`: Output size in pixels
+- `backgroundColor`: Hex color code(s) for background
+- `backgroundType`: Background pattern type
+- `backgroundRotation`: Degree range for gradient rotation
+- `translateX`: Horizontal offset (-100 to 100)
+- `translateY`: Vertical offset (-100 to 100)
+- `clip`: Boolean to clip to shape boundary
+- `randomizeIds`: Boolean to randomize SVG IDs
+
+Additional options vary by avatar style. See the specific style's documentation for all available options.
 </details>
 </details>
 
