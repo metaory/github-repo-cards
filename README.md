@@ -4,23 +4,36 @@ Generate modern, GitHub-style PNG cards for your repositories. Minimal, fast, an
 
 ![Example Card](https://placehold.co/600x300/181825/cdd6f4?text=Example+Card)
 
+<details>
+<summary><strong>Why Repo Card Generator?</strong></summary>
+
+- No servers. No manual steps. No ugly cards.
+- Beautiful, automated, and fully customizable repo cards—committed directly to your repo.
+- No third-party dependencies or network latency.
+- Modern, minimal, and web-first design.
+</details>
+
 ## Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
+- [Use Cases](#use-cases)
 - [Quick Start](#quick-start)
 - [GitHub Actions Usage](#github-actions-usage)
   - [Configuration Options](#configuration-options)
 - [Customization](#customization)
-  - [Style Overrides](#style-overrides)
-  - [Fonts](#fonts)
-  - [Logo Options](#logo-options)
 - [CLI Usage](#cli-usage)
 - [License](#license)
+- [Comparison with Similar Tools](#comparison-with-similar-tools)
+- [FAQ](#faq)
+- [Show me everything](#show-me-everything)
 
 ## Overview
 
 This action generates beautiful, customizable PNG cards for your GitHub repositories that you can use in your profile, documentation, or anywhere else. The primary way to use this tool is through GitHub Actions.
+
+> [!TIP]
+> Showcase your repositories with beautiful, customizable cards for READMEs, wikis, blogs, and more—without relying on third-party servers.
 
 The action handles the entire process: generating the cards, committing them, and pushing them to your repository in one seamless workflow.
 
@@ -32,7 +45,22 @@ The action handles the entire process: generating the cards, committing them, an
 - 🏃 **One-shot** GitHub Action that commits the result back to the repository
 - 🖥 **CLI parity** for local previews or fully-offline usage
 
+> [!TIP]
+> Every aspect—colors, fonts, logos, layout—can be customized with a single line.
+
+<details>
+<summary>Use Cases</summary>
+
+- Add eye-catching repo cards to your GitHub profile README
+- Showcase project stats in documentation or wikis
+- Embed cards in personal blogs or websites
+- Generate assets for social media or presentations
+</details>
+
 ## Quick Start
+
+> [!TIP]
+> The fastest way to get started is by adding a GitHub workflow file to your repository.
 
 1. Create a `.github/workflows/repo-cards.yml` file in your repository
 2. Add the following content:
@@ -71,6 +99,9 @@ jobs:
 
 ### Configuration Options
 
+> [!NOTE]
+> All parameters can be provided as multi-line strings for better readability in your workflow files.
+
 | Parameter     | Required | Description                                      |
 |---------------|----------|--------------------------------------------------|
 | `repositories`| Yes      | Newline-separated list of repository names       |
@@ -81,6 +112,9 @@ jobs:
 
 <details>
 <summary>Advanced GitHub Action Configuration</summary>
+
+> [!IMPORTANT]
+> Make sure to set `permissions: contents: write` in your workflow to allow committing generated cards.
 
 ```yaml
 name: Generate Repository Cards
@@ -128,7 +162,8 @@ jobs:
 
 ## Customization
 
-### Style Overrides
+<details>
+<summary>Style Overrides</summary>
 
 Simple color and layout adjustments:
 
@@ -138,8 +173,8 @@ overrides: |
   FG=#000000  BORDER=2   # Text color & border width
 ```
 
-<details>
-<summary>Detailed Style Options</summary>
+> [!TIP]
+> You can target specific color modes by prefixing variables with `LIGHT_` or `DARK_` for theme-specific styling.
 
 Theme-specific overrides with `LIGHT_` or `DARK_` prefixes:
 
@@ -166,7 +201,8 @@ overrides: |
 - `BORDER`: Border thickness
 </details>
 
-### Fonts
+<details>
+<summary>Fonts</summary>
 
 Custom TTF fonts for `head`, `body` and `stat` sections. Default fonts provided but easily overridden:
 
@@ -176,8 +212,8 @@ fonts: |
   # Only specify sections you want to override - others will use defaults
 ```
 
-<details>
-<summary>Font Configuration Details</summary>
+> [!CAUTION]
+> Only `.ttf` font format is supported. Using other formats may cause rendering issues.
 
 Format: `section=alias:weight@url`
 
@@ -222,7 +258,11 @@ fonts: |
 **Sources:** [Google Fonts](https://fonts.google.com/) | [Fontsource](https://fontsource.org/) | [Font Library](https://fontlibrary.org/)
 </details>
 
-### Logo Options
+<details>
+<summary>Logo Options</summary>
+
+> [!WARNING]
+> The `style` parameter is required for logo generation. Without it, logos will not be created.
 
 Set DiceBear avatar style (style parameter is required):
 
@@ -230,9 +270,6 @@ Set DiceBear avatar style (style parameter is required):
 logo: |
   style=glass  # Required parameter!
 ```
-
-<details>
-<summary>Logo Customization</summary>
 
 More options for the DiceBear-generated avatar:
 
@@ -275,9 +312,26 @@ Additional options vary by avatar style. See the specific style's documentation 
 </details>
 </details>
 
+<details>
+<summary>Customization Examples</summary>
+
+```yaml
+overrides: |
+  DARK_BG=#22223b DARK_FG=#f8f8f2 RADIUS=16 BORDER=8
+fonts: |
+  head=fredoka:600@https://cdn.jsdelivr.net/fontsource/fonts/fredoka-one@latest/latin-400-normal.ttf
+logo: |
+  style=funEmoji radius=20 backgroundType=solid
+```
+
+- Try mixing and matching fonts, colors, and logo styles for unique cards.
+- All options can be combined in your workflow or CLI usage.
+</details>
+
 ## CLI Usage
 
-*Note: GitHub Actions is the recommended way to use this tool. CLI usage is provided for local testing and advanced users.*
+> [!NOTE]
+> GitHub Actions is the recommended way to use this tool. CLI usage is provided for local testing and advanced users.
 
 Generate cards locally:
 
@@ -287,6 +341,9 @@ scripts/generate.sh --repos "repo-cards dotfiles"
 
 <details>
 <summary>Advanced CLI Example</summary>
+
+> [!IMPORTANT]
+> The CLI requires several system dependencies to be installed first.
 
 **Requirements:**
 - bash
@@ -311,3 +368,88 @@ All GitHub Action options are available as CLI parameters with identical format.
 ## License
 
 [MIT](LICENSE)
+
+## Comparison with Similar Tools
+
+> [!IMPORTANT]
+> **Why choose Repo Card Generator?**  
+> No servers. No manual steps. No ugly cards. Just beautiful, automated, and fully customizable repo cards—committed directly to your repo.
+
+> [!IMPORTANT]
+> **Repo Card Generator** stands out by generating and delivering the card images directly to your repository—automatically committing them for you. Most alternatives require you to rely on a third-party server or perform manual steps.
+
+### Key Differences
+
+- **No Server Dependency**: Most other tools (like [gh-card](https://github.com/nwtgck/gh-card)) require you to embed an image URL that points to their server. This:
+  - Adds network latency and reliability issues
+  - Creates a dependency on a third-party service
+  - Raises privacy and security concerns
+  - Can break if the service goes down or changes
+- **Automated Workflow**: Our solution is a GitHub Action that runs on your repo, generates the cards, and commits them automatically. No manual steps, no external servers, no extra maintenance.
+- **Extreme Customizability**: Style, fonts, logos, and layout are all configurable with simple overrides. Competing tools offer little or no customization.
+- **Modern, Minimal, and Beautiful**: Many alternatives are visually outdated or cluttered. This project is designed for modern web-first aesthetics.
+- **No Language Lock-in**: No need to install Python, Go, or Node.js libraries locally. Everything runs in the GitHub Actions environment or via a simple Bash CLI.
+
+### Tool Comparison Table
+
+| Tool | Approach | Customization | Automation | Visuals | Server Dependency |
+|------|----------|--------------|------------|---------|-------------------|
+| **Repo Card Generator (this)** | GitHub Action, Bash CLI | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Modern | None |
+| [gh-card](https://github.com/nwtgck/gh-card) | Web app/server | ⭐ | ⭐ | GitHub-like | Yes |
+| [GitHub-Repo-Cards-Generator](https://github.com/claitz/GitHub-Repo-Cards-Generator) | Manual script | ⭐ | ❌ | Outdated | None |
+| [user-statistician](https://github.com/cicirello/user-statistician) | Python Action | ⭐ | ⭐⭐ | Outdated | None |
+| [github-cards](https://github.com/lepture/github-cards) | JS library | ⭐ | ❌ | Outdated | None |
+| [github_link_creator](https://github.com/po3rin/github_link_creator) | Go CLI | ❌ | ❌ | Outdated | None |
+
+#### Notable Alternatives
+
+- [gh-card](https://github.com/nwtgck/gh-card):
+  - Web app, requires embedding a remote image URL
+  - Minimal customization, limited to GitHub look
+  - Server dependency, not workflow-integrated
+- [GitHub-Repo-Cards-Generator](https://github.com/claitz/GitHub-Repo-Cards-Generator):
+  - Manual, not maintained, limited customization
+  - Outdated visuals
+- [user-statistician](https://github.com/cicirello/user-statistician):
+  - Python-based, does many things but not focused on repo cards
+  - Visuals are cluttered and not modern
+- [github-cards](https://github.com/lepture/github-cards):
+  - JavaScript library, manual integration
+  - No automation, limited style
+- [github_link_creator](https://github.com/po3rin/github_link_creator):
+  - Go CLI, manual, no customization, outdated visuals
+
+> [!TIP]
+> If you want a card that is always available, fast, and fully under your control—with no reliance on third-party servers—**Repo Card Generator** is the clear choice.
+
+## FAQ
+
+<details>
+<summary>FAQ</summary>
+
+**Will this slow down my README?**  
+No. The cards are static PNGs committed to your repo, so they load instantly with your README.
+
+**Can I use my own fonts?**  
+Yes. Any direct URL to a `.ttf` file is supported.
+
+**What if the action fails?**  
+Check the GitHub Actions logs for error details. Most issues are due to missing dependencies or misconfigured workflow files.
+
+**Can I use this outside GitHub Actions?**  
+Yes. Use the Bash CLI for local or offline generation.
+
+**Is there a fallback if a font or logo fails to load?**  
+Yes. The tool falls back to default fonts or logo styles if a custom resource fails.
+
+</details>
+
+## Show me everything
+
+<details>
+<summary>Expand for all advanced details and examples</summary>
+
+- All configuration options, advanced overrides, and troubleshooting tips are above in collapsibles.
+- For more, see the [action.yml](action.yml) and [scripts/generate.sh](scripts/generate.sh) files.
+
+</details>
