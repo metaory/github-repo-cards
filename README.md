@@ -191,7 +191,8 @@ fonts: |
 
 **Key Points:**
 - All sections (`head`, `body`, `stat`) support custom fonts
-- Alias is just a reference name; weight doesn't need to match the actual font
+- Alias is just a reference name
+- Weight doesn't need to match the actual font
 - The tool automatically detects the actual font family name from the TTF file
 - If detection fails, it falls back to the provided alias
 - Only `.ttf` format is supported (other formats may cause issues)
@@ -244,7 +245,6 @@ logo: |
 
 **Key Parameters:**
 - `style`: Avatar style (mandatory)
-- `seed`: Determines the avatar pattern (repository name is used when not specified)
 - `radius`: Corner roundness (0-50)
 - `backgroundColor`: Custom background color in hex
 - `backgroundType`: Background type (solid or gradientLinear)
@@ -285,6 +285,14 @@ scripts/generate.sh --repos "repo-cards dotfiles"
 
 <details>
 <summary>Advanced CLI Example</summary>
+
+**Requirements:**
+- bash
+- jq
+- gh (GitHub CLI)
+- inkscape
+- curl
+- dicebear
 
 ```sh
 scripts/generate.sh \
