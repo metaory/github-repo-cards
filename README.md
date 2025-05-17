@@ -17,7 +17,7 @@ No servers. No manual steps. No ugly cards. Just beautiful, automated, and fully
   - [Configuration Options](#configuration-options)
 - [Customization](#customization)
 - [CLI Usage](#cli-usage)
-- [Comparison with Similar Tools](#comparison-with-similar-tools)
+- [Similar Tools](#similar-tools)
 - [License](#license)
 
 ## Overview
@@ -357,7 +357,7 @@ scripts/generate.sh \
 All GitHub Action options are available as CLI parameters with identical format.
 </details>
 
-## Comparison with Similar Tools
+## Similar Tools
 
 **Repo Card Generator** is a modern, minimal, and fully customizable solution for generating and committing static PNG repo cards directly to your repository—no servers, no manual steps, no third-party dependencies, and no outdated visuals.
 
@@ -391,14 +391,14 @@ All GitHub Action options are available as CLI parameters with identical format.
 - [github_link_creator](https://github.com/po3rin/github_link_creator):
   - Go CLI, manual, no customization, outdated visuals
 
-| Tool                                    | Approach              | Customization | Automation | Visuals      | Server Dependency |
-|----------------------------------------|----------------------|---------------|------------|--------------|-------------------|
-| **Repo Card Generator (this)**          | GitHub Action, Bash CLI | Full         | Full       | Modern       | None             |
-| [gh-card]                              | Web app/server       | Minimal       | Partial    | GitHub-like  | Yes              |
-| [GitHub-Repo-Cards-Generator]          | Manual script        | Minimal       | None       | Outdated     | None             |
-| [user-statistician]                    | Python Action        | Minimal       | Partial    | Outdated     | None             |
-| [github-cards]                         | JS library           | Minimal       | None       | Outdated     | None             |
-| [github_link_creator]                  | Go CLI               | None          | None       | Outdated     | None             |
+| Tool                                    | Server Dependency | Approach              | Automation | Customization |
+|----------------------------------------|-------------------|----------------------|------------|---------------|
+| **Repo Card Generator (this)**          | None              | GitHub Action, Bash CLI | Full       | Full         |
+| [gh-card]                              | Yes               | Web app/server       | Partial    | Minimal       |
+| [GitHub-Repo-Cards-Generator]          | None              | Manual script        | None       | Minimal       |
+| [user-statistician]                    | None              | Python Action        | Partial    | Minimal       |
+| [github-cards]                         | None              | JS library           | None       | Minimal       |
+| [github_link_creator]                  | None              | Go CLI               | None       | None          |
 
 > [!TIP]
 > If you want a card that is always available, fast, and fully under your control—with no reliance on third-party servers—**Repo Card Generator** is the clear choice.

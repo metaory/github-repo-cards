@@ -216,6 +216,36 @@ function load_theme {
   set +a
 }
 
+function smart_trunc {
+  local text="$1" max_width="$2" font="$3" size="$4"
+  local ellipsis="…" result low=0 high=${#text} mid
+
+  function measure {
+    local t="$1"
+    local svg="/tmp/text.svg"
+    echo "<svg xmlns='http://www.w3.org/2000/svg'><text font-family='$font' font-size='${size}px' x='0' y='14'>$t</text></svg>" > "$svg"
+    inkscape --query-id=svg2 --query-width "$svg" 2>/dev/null
+  }
+
+  local full_width
+  full_width=$(measure "${text}${ellipsis}")
+  (( ${full_width%.*} <= max_width )) && { echo "${text}${ellipsis}"; return; }
+
+  while (( low <= high )); do
+    mid=$(( (low + high) / 2 ))
+    local candidate="${text:0:mid}${ellipsis}"
+    local width=$(measure "$candidate")
+    if (( ${width%.*} > max_width )); then
+      high=$((mid - 1))
+    else
+      result="$candidate"
+      low=$((mid + 1))
+    fi
+  done
+
+  echo "${result:-$ellipsis}"
+}
+
 # ───────────────[ REPO ]───────────────
 function fetch_repo {
   local repo="$1"
@@ -242,22 +272,17 @@ function fetch_repo {
     }'
 }
 
-trunc() {
-  local str="$1" max="$2"
-  [[ ${#str} -gt $max ]] && echo "${str:0:$max-3}..." || echo "$str"
-}
-
 # ──────────────────────────────────────
 # ───────────────[ MAIN ]───────────────
 function generate {
   IFS=$'\t' read -r name desc lang star fork < <(jq -r '[.name, .desc, .lang, .star, .fork] | @tsv' <<<"$1")
 
-  name=$(trunc "$name" 24)
-  desc=$(trunc "$desc" 90)
+  load_font
+  name=$(smart_trunc "$name" 320 "$H_FONT" 24)
+  desc=$(smart_trunc "$desc" 540 "$B_FONT" 16)
   logo="$(load_logo "${name}")"
 
   export name desc lang star fork logo
-  load_font
 
   for scheme in light dark; do
     log "scheme $scheme"
