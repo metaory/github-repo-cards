@@ -23,7 +23,6 @@ function cleanup {
   [[ -d "$TMP" ]] && rm -rf "$TMP"
 }
 
-# Set up trap handling
 trap 'on_error $LINENO "$BASH_COMMAND"' ERR
 trap cleanup EXIT
 trap 'log "Interrupted"; cleanup; exit 1' INT
@@ -117,19 +116,16 @@ function load_font {
   log "Loading fonts..."
   mkdir -p ~/.local/share/fonts/TTF
 
-  # Initialize with sans-serif fallbacks
   H_FONT="sans-serif" H_WEIGHT="700"
   B_FONT="sans-serif" B_WEIGHT="400"
   S_FONT="sans-serif" S_WEIGHT="400"
 
   for font_def in $FONTS; do
-    # Check basic format first
     [[ "$font_def" == *=*:*@* ]] || {
       log "Invalid font format: $font_def"
       continue
     }
 
-    # Parse using parameter expansion
     section="${font_def%%=*}"
     rest="${font_def#*=}"
     alias="${rest%%:*}"
@@ -137,7 +133,6 @@ function load_font {
     weight="${rest%%@*}"
     url="${rest#*@}"
 
-    # Validate parts
     [[ -z "$section" || -z "$alias" || -z "$weight" || -z "$url" ]] && {
       log "Missing component in font definition: $font_def"
       continue
@@ -219,6 +214,7 @@ function load_theme {
 function smart_trunc {
   local text="$1" max_width="$2" font="$3" size="$4"
   local ellipsis="…" result low=0 high=${#text} mid
+  echo "truncating text ..." >&2
 
   function measure {
     local t="$1"
@@ -278,8 +274,8 @@ function generate {
   IFS=$'\t' read -r name desc lang star fork < <(jq -r '[.name, .desc, .lang, .star, .fork] | @tsv' <<<"$1")
 
   load_font
-  name=$(smart_trunc "$name" 320 "$H_FONT" 24)
-  desc=$(smart_trunc "$desc" 540 "$B_FONT" 16)
+  name=$(smart_trunc "$name" 200 "$H_FONT" 24)
+  desc=$(smart_trunc "$desc" 340 "$B_FONT" 16)
   logo="$(load_logo "${name}")"
 
   export name desc lang star fork logo

@@ -5,7 +5,7 @@ Generate modern, GitHub-style PNG cards for your repositories. Minimal, fast, an
 ![Example Card](https://placehold.co/600x300/181825/cdd6f4?text=Example+Card)
 
 **Why Repo Card Generator?**
-No servers. No manual steps. No ugly cards. Just beautiful, automated, and fully customizable repo cards—committed directly to your repo, with zero third-party dependencies or network latency.
+No servers. No manual steps. No ugly cards. Just beautiful, automated, and fully customizable repo cards, committed directly to your repo, with zero third-party dependencies or network latency.
 
 ## Table of Contents
 
@@ -14,7 +14,7 @@ No servers. No manual steps. No ugly cards. Just beautiful, automated, and fully
 - [Use Cases](#use-cases)
 - [Quick Start](#quick-start)
 - [GitHub Actions Usage](#github-actions-usage)
-  - [Configuration Options](#configuration-options)
+- [Configuration Options](#configuration-options)
 - [Customization](#customization)
 - [CLI Usage](#cli-usage)
 - [Similar Tools](#similar-tools)
@@ -94,13 +94,13 @@ jobs:
 > [!NOTE]
 > All parameters can be provided as multi-line strings for better readability in your workflow files.
 
-| Parameter     | Required | Description                                      |
-|---------------|----------|--------------------------------------------------|
-| `repositories`| Yes      | Newline-separated list of repository names       |
-| `overrides`   | No       | Style overrides (colors, sizes, etc.)            |
-| `fonts`       | No       | Custom font configurations                       |
-| `logo`        | No       | Logo style and options                           |
-| `output`      | No       | Output directory for generated cards (default: `cards`) |
+| Parameter     | Required | Description                                           |
+|---------------|----------|-------------------------------------------------------|
+| `repositories`  | Yes      | Newline-separated list of repository names            |
+| `overrides`     | No       | Style overrides (colors, sizes, etc.)                 |
+| `fonts`         | No       | Custom font configurations                            |
+| `logo`          | No       | Logo style and options                                |
+| `output`        | No       | Output directory for generated cards (default: `cards`) |
 
 <details>
 <summary>Advanced GitHub Action Configuration</summary>
@@ -128,7 +128,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: metaory/repo-card-generator@v1
         with:
           repositories: |
@@ -136,8 +136,8 @@ jobs:
             dotfiles
             my-awesome-project
           overrides: |
-            DARK_BG=#181825  DARK_FG=#cdd6f4  # Dark mode colors
-            RADIUS=14  BORDER=6               # Card shape properties
+            DARK_BG=#181825 DARK_FG=#cdd6f4  # Dark mode colors
+            RADIUS=14       BORDER=6         # Card shape properties
           fonts: |
             head=inter-bold:800@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-800-normal.ttf
             body=inter-regular:400@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf
@@ -173,13 +173,13 @@ Theme-specific overrides with `LIGHT_` or `DARK_` prefixes:
 ```yaml
 overrides: |
   # Light mode
-  LIGHT_BG=#f0f0f0  LIGHT_HL=#0969da
-  LIGHT_FG=#1a1a1a  LIGHT_AC=#2da44e
-  
+  LIGHT_BG=#FFEEDD  LIGHT_HL=#4477DD
+  LIGHT_FG=#221133  LIGHT_AC=#22AA44
+
   # Dark mode
-  DARK_BG=#181825   DARK_HL=#f38ba8
-  DARK_FG=#cdd6f4   DARK_AC=#89b4fa
-  
+  DARK_BG=#112233   DARK_HL=#FF88AA
+  DARK_FG=#CCDDFF   DARK_AC=#44BBFF
+
   # Universal
   RADIUS=14  BORDER=6
 ```
@@ -309,7 +309,7 @@ Additional options vary by avatar style. See the specific style's documentation 
 
 ```yaml
 overrides: |
-  DARK_BG=#22223b DARK_FG=#f8f8f2 RADIUS=16 BORDER=8
+  DARK_BG=#221133 DARK_FG=#FFDDEE RADIUS=16 BORDER=8
 fonts: |
   head=fredoka:600@https://cdn.jsdelivr.net/fontsource/fonts/fredoka-one@latest/latin-400-normal.ttf
 logo: |
@@ -348,7 +348,7 @@ scripts/generate.sh --repos "repo-cards dotfiles"
 ```sh
 scripts/generate.sh \
   --repos "repo-cards dotfiles" \
-  --overrides "DARK_BG=#181825 RADIUS=14" \
+  --overrides "DARK_BG=#221133 RADIUS=14" \
   --output assets/cards \
   --logo "style=glass radius=28" \
   --fonts 'head=inter:800@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-800-normal.ttf'
@@ -391,17 +391,16 @@ All GitHub Action options are available as CLI parameters with identical format.
 - [github_link_creator](https://github.com/po3rin/github_link_creator):
   - Go CLI, manual, no customization, outdated visuals
 
-| Tool                                    | Server Dependency | Approach              | Automation | Customization |
-|----------------------------------------|-------------------|----------------------|------------|---------------|
-| **Repo Card Generator (this)**          | None              | GitHub Action, Bash CLI | Full       | Full         |
+| Tool                                 | Server Dependency | Approach             | Automation | Customization |
+|--------------------------------------|-------------------|----------------------|------------|---------------|
+| **Repo Card Generator (this)**           | None              | GitHub Action, CLI   | Full       | Full          |
 | [gh-card]                              | Yes               | Web app/server       | Partial    | Minimal       |
 | [GitHub-Repo-Cards-Generator]          | None              | Manual script        | None       | Minimal       |
 | [user-statistician]                    | None              | Python Action        | Partial    | Minimal       |
 | [github-cards]                         | None              | JS library           | None       | Minimal       |
 | [github_link_creator]                  | None              | Go CLI               | None       | None          |
 
-> [!TIP]
-> If you want a card that is always available, fast, and fully under your control—with no reliance on third-party servers—**Repo Card Generator** is the clear choice.
+---
 
 ## License
 
