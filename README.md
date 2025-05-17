@@ -373,15 +373,6 @@ All GitHub Action options are available as CLI parameters with identical format.
 - **Modern, Minimal, and Beautiful**: Many alternatives are visually outdated or cluttered. This project is designed for modern web-first aesthetics.
 - **No Language Lock-in**: No need to install Python, Go, or Node.js libraries locally. Everything runs in the GitHub Actions environment or via a simple Bash CLI.
 
-| Tool                                    | Approach              | Customization | Automation | Visuals      | Server Dependency |
-|----------------------------------------|----------------------|---------------|------------|--------------|-------------------|
-| **Repo Card Generator (this)**          | GitHub Action, Bash CLI | Full         | Full       | Modern       | None             |
-| [gh-card]                              | Web app/server       | Minimal       | Partial    | GitHub-like  | Yes              |
-| [GitHub-Repo-Cards-Generator]          | Manual script        | Minimal       | None       | Outdated     | None             |
-| [user-statistician]                    | Python Action        | Minimal       | Partial    | Outdated     | None             |
-| [github-cards]                         | JS library           | Minimal       | None       | Outdated     | None             |
-| [github_link_creator]                  | Go CLI               | None          | None       | Outdated     | None             |
-
 #### Notable Alternatives
 
 - [gh-card](https://github.com/nwtgck/gh-card):
@@ -399,6 +390,15 @@ All GitHub Action options are available as CLI parameters with identical format.
   - No automation, limited style
 - [github_link_creator](https://github.com/po3rin/github_link_creator):
   - Go CLI, manual, no customization, outdated visuals
+
+| Tool                                    | Approach              | Customization | Automation | Visuals      | Server Dependency |
+|----------------------------------------|----------------------|---------------|------------|--------------|-------------------|
+| **Repo Card Generator (this)**          | GitHub Action, Bash CLI | Full         | Full       | Modern       | None             |
+| [gh-card]                              | Web app/server       | Minimal       | Partial    | GitHub-like  | Yes              |
+| [GitHub-Repo-Cards-Generator]          | Manual script        | Minimal       | None       | Outdated     | None             |
+| [user-statistician]                    | Python Action        | Minimal       | Partial    | Outdated     | None             |
+| [github-cards]                         | JS library           | Minimal       | None       | Outdated     | None             |
+| [github_link_creator]                  | Go CLI               | None          | None       | Outdated     | None             |
 
 > [!TIP]
 > If you want a card that is always available, fast, and fully under your control—with no reliance on third-party servers—**Repo Card Generator** is the clear choice.
