@@ -4,14 +4,8 @@ Generate modern, GitHub-style PNG cards for your repositories. Minimal, fast, an
 
 ![Example Card](https://placehold.co/600x300/181825/cdd6f4?text=Example+Card)
 
-<details>
-<summary><strong>Why Repo Card Generator?</strong></summary>
-
-- No servers. No manual steps. No ugly cards.
-- Beautiful, automated, and fully customizable repo cards—committed directly to your repo.
-- No third-party dependencies or network latency.
-- Modern, minimal, and web-first design.
-</details>
+**Why Repo Card Generator?**
+No servers. No manual steps. No ugly cards. Just beautiful, automated, and fully customizable repo cards—committed directly to your repo, with zero third-party dependencies or network latency.
 
 ## Table of Contents
 
@@ -26,7 +20,6 @@ Generate modern, GitHub-style PNG cards for your repositories. Minimal, fast, an
 - [License](#license)
 - [Comparison with Similar Tools](#comparison-with-similar-tools)
 - [FAQ](#faq)
-- [Show me everything](#show-me-everything)
 
 ## Overview
 
@@ -371,12 +364,7 @@ All GitHub Action options are available as CLI parameters with identical format.
 
 ## Comparison with Similar Tools
 
-> [!IMPORTANT]
-> **Why choose Repo Card Generator?**  
-> No servers. No manual steps. No ugly cards. Just beautiful, automated, and fully customizable repo cards—committed directly to your repo.
-
-> [!IMPORTANT]
-> **Repo Card Generator** stands out by generating and delivering the card images directly to your repository—automatically committing them for you. Most alternatives require you to rely on a third-party server or perform manual steps.
+**Repo Card Generator** is a modern, minimal, and fully customizable solution for generating and committing static PNG repo cards directly to your repository—no servers, no manual steps, no third-party dependencies, and no outdated visuals.
 
 ### Key Differences
 
@@ -390,16 +378,14 @@ All GitHub Action options are available as CLI parameters with identical format.
 - **Modern, Minimal, and Beautiful**: Many alternatives are visually outdated or cluttered. This project is designed for modern web-first aesthetics.
 - **No Language Lock-in**: No need to install Python, Go, or Node.js libraries locally. Everything runs in the GitHub Actions environment or via a simple Bash CLI.
 
-### Tool Comparison Table
-
-| Tool | Approach | Customization | Automation | Visuals | Server Dependency |
-|------|----------|--------------|------------|---------|-------------------|
-| **Repo Card Generator (this)** | GitHub Action, Bash CLI | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Modern | None |
-| [gh-card](https://github.com/nwtgck/gh-card) | Web app/server | ⭐ | ⭐ | GitHub-like | Yes |
-| [GitHub-Repo-Cards-Generator](https://github.com/claitz/GitHub-Repo-Cards-Generator) | Manual script | ⭐ | ❌ | Outdated | None |
-| [user-statistician](https://github.com/cicirello/user-statistician) | Python Action | ⭐ | ⭐⭐ | Outdated | None |
-| [github-cards](https://github.com/lepture/github-cards) | JS library | ⭐ | ❌ | Outdated | None |
-| [github_link_creator](https://github.com/po3rin/github_link_creator) | Go CLI | ❌ | ❌ | Outdated | None |
+| Tool                                    | Approach              | Customization | Automation | Visuals      | Server Dependency |
+|----------------------------------------|----------------------|---------------|------------|--------------|-------------------|
+| **Repo Card Generator (this)**          | GitHub Action, Bash CLI | ⭐⭐⭐⭐⭐      | ⭐⭐⭐⭐⭐     | Modern       | None             |
+| [gh-card]                              | Web app/server       | ⭐            | ⭐          | GitHub-like  | Yes              |
+| [GitHub-Repo-Cards-Generator]          | Manual script        | ⭐            | ❌          | Outdated     | None             |
+| [user-statistician]                    | Python Action        | ⭐            | ⭐⭐         | Outdated     | None             |
+| [github-cards]                         | JS library           | ⭐            | ❌          | Outdated     | None             |
+| [github_link_creator]                  | Go CLI               | ❌            | ❌          | Outdated     | None             |
 
 #### Notable Alternatives
 
@@ -441,15 +427,5 @@ Yes. Use the Bash CLI for local or offline generation.
 
 **Is there a fallback if a font or logo fails to load?**  
 Yes. The tool falls back to default fonts or logo styles if a custom resource fails.
-
-</details>
-
-## Show me everything
-
-<details>
-<summary>Expand for all advanced details and examples</summary>
-
-- All configuration options, advanced overrides, and troubleshooting tips are above in collapsibles.
-- For more, see the [action.yml](action.yml) and [scripts/generate.sh](scripts/generate.sh) files.
 
 </details>
