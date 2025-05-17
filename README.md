@@ -17,9 +17,8 @@ No servers. No manual steps. No ugly cards. Just beautiful, automated, and fully
   - [Configuration Options](#configuration-options)
 - [Customization](#customization)
 - [CLI Usage](#cli-usage)
-- [License](#license)
 - [Comparison with Similar Tools](#comparison-with-similar-tools)
-- [FAQ](#faq)
+- [License](#license)
 
 ## Overview
 
@@ -358,10 +357,6 @@ scripts/generate.sh \
 All GitHub Action options are available as CLI parameters with identical format.
 </details>
 
-## License
-
-[MIT](LICENSE)
-
 ## Comparison with Similar Tools
 
 **Repo Card Generator** is a modern, minimal, and fully customizable solution for generating and committing static PNG repo cards directly to your repository—no servers, no manual steps, no third-party dependencies, and no outdated visuals.
@@ -380,12 +375,12 @@ All GitHub Action options are available as CLI parameters with identical format.
 
 | Tool                                    | Approach              | Customization | Automation | Visuals      | Server Dependency |
 |----------------------------------------|----------------------|---------------|------------|--------------|-------------------|
-| **Repo Card Generator (this)**          | GitHub Action, Bash CLI | ⭐⭐⭐⭐⭐      | ⭐⭐⭐⭐⭐     | Modern       | None             |
-| [gh-card]                              | Web app/server       | ⭐            | ⭐          | GitHub-like  | Yes              |
-| [GitHub-Repo-Cards-Generator]          | Manual script        | ⭐            | ❌          | Outdated     | None             |
-| [user-statistician]                    | Python Action        | ⭐            | ⭐⭐         | Outdated     | None             |
-| [github-cards]                         | JS library           | ⭐            | ❌          | Outdated     | None             |
-| [github_link_creator]                  | Go CLI               | ❌            | ❌          | Outdated     | None             |
+| **Repo Card Generator (this)**          | GitHub Action, Bash CLI | Full         | Full       | Modern       | None             |
+| [gh-card]                              | Web app/server       | Minimal       | Partial    | GitHub-like  | Yes              |
+| [GitHub-Repo-Cards-Generator]          | Manual script        | Minimal       | None       | Outdated     | None             |
+| [user-statistician]                    | Python Action        | Minimal       | Partial    | Outdated     | None             |
+| [github-cards]                         | JS library           | Minimal       | None       | Outdated     | None             |
+| [github_link_creator]                  | Go CLI               | None          | None       | Outdated     | None             |
 
 #### Notable Alternatives
 
@@ -408,24 +403,6 @@ All GitHub Action options are available as CLI parameters with identical format.
 > [!TIP]
 > If you want a card that is always available, fast, and fully under your control—with no reliance on third-party servers—**Repo Card Generator** is the clear choice.
 
-## FAQ
+## License
 
-<details>
-<summary>FAQ</summary>
-
-**Will this slow down my README?**  
-No. The cards are static PNGs committed to your repo, so they load instantly with your README.
-
-**Can I use my own fonts?**  
-Yes. Any direct URL to a `.ttf` file is supported.
-
-**What if the action fails?**  
-Check the GitHub Actions logs for error details. Most issues are due to missing dependencies or misconfigured workflow files.
-
-**Can I use this outside GitHub Actions?**  
-Yes. Use the Bash CLI for local or offline generation.
-
-**Is there a fallback if a font or logo fails to load?**  
-Yes. The tool falls back to default fonts or logo styles if a custom resource fails.
-
-</details>
+[MIT](LICENSE)
