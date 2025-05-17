@@ -277,7 +277,9 @@ Additional options vary by avatar style. See the specific style's documentation 
 
 ## CLI Usage
 
-Generate cards locally (needs: bash, jq, gh, inkscape):
+*Note: GitHub Actions is the recommended way to use this tool. CLI usage is provided for local testing and advanced users.*
+
+Generate cards locally:
 
 ```sh
 scripts/generate.sh --repos "repo-cards dotfiles"
