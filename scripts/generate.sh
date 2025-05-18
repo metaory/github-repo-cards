@@ -211,6 +211,7 @@ function load_theme {
   set +a
 }
 
+# ───────────────[ POS ]───────────────
 function trunc {
   local text="$1" max_width=$2 font_size=${3:-24} ellipsis="…"
   local avg_char_width=$((font_size / 2))
@@ -228,6 +229,28 @@ function trunc {
   echo "$cut$ellipsis"
 }
 
+# function svg_text_width {
+#   local text="$1" font="$2" size="$3"
+#   local svg="/tmp/text.svg"
+#   echo "<svg xmlns='http://www.w3.org/2000/svg'><text font-family='$font' font-size='${size}px' x='0' y='14'>$text</text></svg>" >"$svg"
+#   inkscape --query-id=svg2 --query-width "$svg" 2>/dev/null
+# }
+
+function svg_text_width {
+  local text="$1" font="$2" size="$3"
+  local avg_width=14
+  echo $((${#text} * avg_width))
+}
+
+function pill_metrics {
+  local prefix="$1" text="$2" font="$3" size="$4" padding="$5"
+  local width center
+  width=$(svg_text_width "$text" "$font" "$size")
+  width=$((${width%.*} + 2 * padding))
+  center=$((width / 2))
+  export "${prefix}_RW"="$width" "${prefix}_RX"=0 "${prefix}_TX"="$center"
+}
+
 # ───────────────[ REPO ]───────────────
 function fetch_repo {
   local repo="$1"
@@ -236,10 +259,16 @@ function fetch_repo {
     jq -n --arg repo "$repo" '{
       name: $repo,
       desc: "Everyone has the right to freedom of thought, opinion, conscience and expression religion; this right includes freedom to change his religion or belief, and freedom, either alone or in community with others and in public or private, to manifest his religion or belief in teaching, practice, worship and observance",
-      lang: "Lua",
+      lang: "JavaScript",
       star: 42,
       fork: 7
     }'
+    # lang: "Lua",
+    # lang: "Haskell",
+    # lang: "JavaScript",
+    # lang: "Vim Help File",
+    # lang: "Git Revision List",
+    # lang: "OpenAPI Specification",
     return
   fi
 
@@ -260,9 +289,14 @@ function generate {
   IFS=$'\t' read -r name desc lang star fork < <(jq -r '[.name, .desc, .lang, .star, .fork] | @tsv' <<<"$1")
 
   load_font
+  pill_metrics LANG "$lang" "$S_FONT" 24 16
+
   repo="${name}"
-  name=$(trunc "$name" 200 24)
-  desc=$(trunc "$desc" 340 16)
+  name=$(trunc "$name" 400 44)
+  desc=$(trunc "$desc" 1400 26)
+
+  export name desc lang star fork logo
+
   logo="$(load_logo "${repo}")"
 
   export name desc lang star fork logo
