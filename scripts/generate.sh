@@ -211,35 +211,21 @@ function load_theme {
   set +a
 }
 
-function smart_trunc {
-  local text="$1" max_width="$2" font="$3" size="$4"
-  local ellipsis="…" result low=0 high=${#text} mid
-  echo "truncating text ..." >&2
+function trunc {
+  local text="$1" max_width=$2 font_size=${3:-24} ellipsis="…"
+  local avg_char_width=$((font_size / 2))
+  local max_chars=$((max_width / avg_char_width))
 
-  function measure {
-    local t="$1"
-    local svg="/tmp/text.svg"
-    echo "<svg xmlns='http://www.w3.org/2000/svg'><text font-family='$font' font-size='${size}px' x='0' y='14'>$t</text></svg>" > "$svg"
-    inkscape --query-id=svg2 --query-width "$svg" 2>/dev/null
+  [[ ${#text} -le max_chars ]] && {
+    echo "$text"
+    return
   }
 
-  local full_width
-  full_width=$(measure "${text}${ellipsis}")
-  (( ${full_width%.*} <= max_width )) && { echo "${text}${ellipsis}"; return; }
+  local cut="${text:0:max_chars}"
+  cut="${cut% *}"
+  [[ -z $cut ]] && cut="${text:0:max_chars}"
 
-  while (( low <= high )); do
-    mid=$(( (low + high) / 2 ))
-    local candidate="${text:0:mid}${ellipsis}"
-    local width=$(measure "$candidate")
-    if (( ${width%.*} > max_width )); then
-      high=$((mid - 1))
-    else
-      result="$candidate"
-      low=$((mid + 1))
-    fi
-  done
-
-  echo "${result:-$ellipsis}"
+  echo "$cut$ellipsis"
 }
 
 # ───────────────[ REPO ]───────────────
@@ -274,16 +260,17 @@ function generate {
   IFS=$'\t' read -r name desc lang star fork < <(jq -r '[.name, .desc, .lang, .star, .fork] | @tsv' <<<"$1")
 
   load_font
-  name=$(smart_trunc "$name" 200 "$H_FONT" 24)
-  desc=$(smart_trunc "$desc" 340 "$B_FONT" 16)
-  logo="$(load_logo "${name}")"
+  repo="${name}"
+  name=$(trunc "$name" 200 24)
+  desc=$(trunc "$desc" 340 16)
+  logo="$(load_logo "${repo}")"
 
   export name desc lang star fork logo
 
   for scheme in light dark; do
-    log "scheme $scheme"
+    log "loading $scheme $repo"
     load_theme "$scheme"
-    filename="card_${name}_${scheme}"
+    filename="card_${repo}_${scheme}"
 
     envsubst <templates/default.svg >"${TMP}/${filename}.svg"
 
