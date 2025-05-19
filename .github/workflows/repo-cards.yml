@@ -35,5 +35,6 @@ jobs:
             RADIUS=10
             BORDER=7
           output: cards
+          template: default
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

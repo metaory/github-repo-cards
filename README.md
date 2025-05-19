@@ -106,6 +106,7 @@ jobs:
           repositories: |
             repo-cards
             dotfiles
+          template: default  # Optional, picks SVG layout preset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -121,13 +122,14 @@ jobs:
 > [!NOTE]
 > All parameters can be provided as multi-line strings for better readability in your workflow files.
 
-| Parameter     | Required | Description                                           |
-|---------------|----------|-------------------------------------------------------|
-| `repositories`  | Yes      | Newline-separated list of repository names            |
-| `overrides`     | No       | Style overrides (colors, sizes, etc.)                 |
-| `fonts`         | No       | Custom font configurations                            |
-| `logo`          | No       | Logo style and options                                |
+| Parameter       | Required | Description                                             |
+|-----------------|----------|---------------------------------------------------------|
+| `repositories`  | Yes      | Newline-separated list of repository names              |
+| `overrides`     | No       | Style overrides (colors, sizes, etc.)                   |
+| `template`      | No       | SVG template/layout preset (default: `default`)         |
 | `output`        | No       | Output directory for generated cards (default: `cards`) |
+| `fonts`         | No       | Custom font configurations                              |
+| `logo`          | No       | Logo style and options                                  |
 
 <details>
 <summary>Advanced GitHub Action Configuration</summary>
@@ -175,6 +177,7 @@ jobs:
             radius=28
             backgroundType=gradientLinear
           output: assets/cards   # Cards will be generated, committed and pushed to this directory
+          template: default  # Optional, picks SVG layout preset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -352,7 +355,7 @@ logo: |
 Generate cards locally:
 
 ```sh
-scripts/generate.sh --repos "repo-cards dotfiles"
+scripts/generate.sh --repos "repo-cards dotfiles" --template default
 ```
 
 <details>
@@ -375,7 +378,8 @@ scripts/generate.sh \
   --overrides "DARK_BG=#221133 RADIUS=14" \
   --output assets/cards \
   --logo "style=glass radius=28" \
-  --fonts 'head=https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf'
+  --fonts 'head=https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf' \
+  --template default
 ```
 
 All GitHub Action options are available as CLI parameters with identical format.
@@ -429,3 +433,13 @@ All GitHub Action options are available as CLI parameters with identical format.
 ## License
 
 [MIT](LICENSE)
+
+## Templates
+
+You can select a card layout preset using the `template` option. The default is `default`, which uses `templates/default.svg`.
+
+```yaml
+template: default
+```
+
+More templates (e.g., `compact`, `modern`, etc.) can be added in the future. To use a custom template, add your SVG to the `templates/` directory and set `template` to its name (without `.svg`).

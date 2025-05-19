@@ -24,6 +24,11 @@ inputs:
     required: false
     default: 'cards'
 
+  template:
+    description: 'SVG template/layout preset (default: default)'
+    required: false
+    default: 'default'
+
 runs:
   using: 'composite'
   steps:
@@ -55,7 +60,8 @@ runs:
           --overrides "$(tr '\n' ' ' <<< "${{ inputs.overrides }}")" \
           --fonts "$(tr '\n' ' ' <<< "${{ inputs.fonts }}")" \
           --logo "$(tr '\n' ' ' <<< "${{ inputs.logo }}")" \
-          --output "${{ inputs.output }}"
+          --output "${{ inputs.output }}" \
+          --template "${{ inputs.template }}"
       env:
         GITHUB_TOKEN: ${{ github.token }}
 

@@ -2,22 +2,26 @@
 set -euo pipefail
 
 # ───────────────[ DEFAULTS ]───────────────
-DEV=false
+LOGO='style=glass radius=28 backgroundType=gradientLinear'
 OWNER="${GITHUB_ACTOR:-$(git config user.name)}"
 OUTPUT_DIR=cards
+TEMPLATE=default
 OVERRIDES=
-LOGO='style=glass radius=28 backgroundType=gradientLinear'
-FONTS='head=https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf body=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf lang=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf stat=https://cdn.jsdelivr.net/fontsource/fonts/monofett@latest/latin-400-normal.ttf'
+DEV=false
+REPOS=
+FONTS='
+head=https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf
+body=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
+lang=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
+stat=https://cdn.jsdelivr.net/fontsource/fonts/monofett@latest/latin-400-normal.ttf'
+FONTS=$(tr '\n' ' ' <<<"$FONTS")
 # https://cdn.jsdelivr.net/fontsource/fonts/rampart-one@latest/latin-400-normal.ttf
 # https://cdn.jsdelivr.net/fontsource/fonts/blackout-two-am@latest/latin-400-normal.ttf
 # https://cdn.jsdelivr.net/fontsource/fonts/blackout-midnight@latest/latin-400-normal.ttf
 
-# https://cdn.jsdelivr.net/fontsource/fonts/monofett@latest/latin-400-normal.ttf
 # https://cdn.jsdelivr.net/fontsource/fonts/museomoderno@latest/latin-400-normal.ttf
 # https://cdn.jsdelivr.net/fontsource/fonts/darumadrop-one@latest/latin-400-normal.ttf
 # https://cdn.jsdelivr.net/fontsource/fonts/sniglet@latest/latin-400-normal.ttf
-
-REPOS=
 
 # ───────────────[ SHIM ]───────────────
 function date { gdate "$@" 2>/dev/null || /bin/date "$@"; }
@@ -49,6 +53,7 @@ Usage:
   --logo EXT         Logo dicebear options
   --output DIR       Output directory (default: cards)
   --dev              Use mock data (no GitHub API)
+  --template TEMPLATE
   -h, --help         Show this help
 EOF
   exit 0
@@ -106,6 +111,10 @@ while [[ $# -gt 0 ]]; do
     DEV=true
     shift
     ;;
+  --template)
+    TEMPLATE="$2"
+    shift 2
+    ;;
   -h | --help) usage ;;
   *)
     log "unknown arg: $1"
@@ -123,6 +132,14 @@ for cmd in jq gh curl base64 envsubst inkscape dicebear; do
   command -v "$cmd" >/dev/null || {
     log "❌ missing: $cmd" >&2
     exit 127
+  }
+done
+
+# Template validation (SVG and ENV)
+for f in templates/${TEMPLATE}.{svg,env}; do
+  [[ -f "$f" ]] || {
+    log "❌ Template file not found: $f"
+    exit 2
   }
 done
 
@@ -226,7 +243,7 @@ function load_theme {
   # shellcheck disable=SC1090
   source <(
     {
-      cat templates/default.env
+      cat "templates/${TEMPLATE}.env"
       tr ' ' '\n' <<<"$OVERRIDES"
     } | sed "/^$/d;s/${scheme^^}_//g"
   )
@@ -326,7 +343,7 @@ function generate {
     load_theme "$scheme"
     filename="card_${repo}_${scheme}"
 
-    envsubst <templates/default.svg >"${TMP}/${filename}.svg"
+    envsubst <"templates/${TEMPLATE}.svg" >"${TMP}/${filename}.svg"
 
     inkscape "${TMP}/${filename}.svg" \
       --export-dpi=300 \
@@ -339,7 +356,7 @@ function generate {
 }
 
 # ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶
-logheader TMP DEV OWNER REPOS OVERRIDES FONTS OUTPUT_DIR
+logheader TMP DEV OWNER REPOS OVERRIDES FONTS OUTPUT_DIR TEMPLATE
 
 # ───────────────[ DRIVER ]───────────────
 for repo in $REPOS; do
