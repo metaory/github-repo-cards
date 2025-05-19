@@ -1,18 +1,27 @@
 <div align="center">
+    <h3>GitHub Repo Cards</h3>
     <img src=".github/assets/logo.svg" alt="logo" height="128" />
-    <h3>Repo Card Generator</h3>
     <p>
-        Sleek, Modern, Static cards
+        GitHub Action
         <br>
-        for your GitHub repositories
+         generating sleek · static
         <br>
-        Fully offline · Fully themeable · Full control
+        repository cards
+        <br>
+        rasterized · versioned · customizable
     </p>
     <img src="sample-cards/card_glitcher-app_dark.png" alt="card_glitcher-app-dark" width="40%" />
     <img src="sample-cards/card_glitcher-app_light.png" alt="card_glitcher-app-light" width="40%" />
     <img src="sample-cards/card_gradient-gl_dark.png" alt="card_gradient-gl_dark" width="40%" />
     <img src="sample-cards/card_gradient-gl_light.png" alt="card_gradient-gl_light.png" width="40%" />
 </div>
+
+
+github-repo-cards is a GitHub Action that renders customizable static cards for your repositories.
+Cards are generated fully offline, styled with simple overrides, and committed directly to your repository, no servers, no embeds, no runtime dependencies.
+
+Built for clean READMEs, wikis, blogs, or social previews.
+Run it on a schedule or trigger it manually in your GitHub workflow—zero maintenance required.
 
 
 No runtime. No APIs. No server. No embeds. Cards are generated and committed directly into your repository.
@@ -92,7 +101,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: metaory/repo-card-generator@v1
+      - uses: metaory/github-repo-cards@v1
         with:
           repositories: |
             repo-cards
@@ -147,7 +156,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: metaory/repo-card-generator@v1
+      - uses: metaory/github-repo-cards@v1
         with:
           repositories: |
             repo-cards
@@ -157,9 +166,10 @@ jobs:
             DARK_BG=#181825 DARK_FG=#cdd6f4  # Dark mode colors
             RADIUS=14       BORDER=6         # Card shape properties
           fonts: |
-            head=inter-bold:800@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-800-normal.ttf
-            body=inter-regular:400@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf
-            stat=nabla:400@https://cdn.jsdelivr.net/fontsource/fonts/nabla@latest/latin-400-normal.ttf
+            head=https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf
+            body=https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf
+            lang=https://cdn.jsdelivr.net/fontsource/fonts/nabla@latest/latin-400-normal.ttf
+            stat=https://cdn.jsdelivr.net/fontsource/fonts/monofett@latest/latin-400-normal.ttf
           logo: |
             style=glass
             radius=28
@@ -214,35 +224,27 @@ overrides: |
 <details>
 <summary>Fonts</summary>
 
-Custom TTF fonts for `head`, `body` and `stat` sections. Default fonts provided but easily overridden:
+Custom TTF fonts for `head`, `body`, `lang`, and `stat` sections. Default fonts provided but easily overridden:
 
 ```yaml
 fonts: |
-  head=inter:800@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-800-normal.ttf
-  # Only specify sections you want to override - others will use defaults
+  head=https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf
+  body=https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf
+  lang=https://cdn.jsdelivr.net/fontsource/fonts/nabla@latest/latin-400-normal.ttf
+  stat=https://cdn.jsdelivr.net/fontsource/fonts/monofett@latest/latin-400-normal.ttf
 ```
 
 > [!CAUTION]
 > Only `.ttf` font format is supported. Using other formats may cause rendering issues.
 
-Format: `section=alias:weight@url`
-
-```yaml
-# Default fonts
-fonts: |
-  head=bungee:700@https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf
-  body=baloo-bold:800@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
-  stat=baloo-norm:400@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
-```
+Format: `section=url-to-ttf`
 
 **Key Points:**
-- All sections (`head`, `body`, `stat`) support custom fonts
-- Alias is just a reference name
-- Weight doesn't need to match the actual font
-- The tool automatically detects the actual font family name from the TTF file
-- If detection fails, it falls back to the provided alias
-- Only `.ttf` format is supported (other formats may cause issues)
-- If you only customize some sections (e.g., just `head`), others will use the default fonts
+- All sections (`head`, `body`, `lang`, `stat`) support custom fonts
+- Font size and weight are locked for layout stability
+- Only font family (as a TTF URL) is customizable
+- `lang` is used for the language label
+- `stat` is used for numeric stats (stars, forks)
 
 **How to Find Fonts:**
 1. **Fontsource** (Recommended): Browse [Fontsource](https://fontsource.org/fonts) for fonts
@@ -260,9 +262,10 @@ fonts: |
 **Example: Mix Different Fonts**
 ```yaml
 fonts: |
-  head=comic:700@https://cdn.jsdelivr.net/fontsource/fonts/comic-neue@latest/latin-700-normal.ttf
-  body=inter:400@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf
-  stat=inter:600@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.ttf
+  head=https://cdn.jsdelivr.net/fontsource/fonts/comic-neue@latest/latin-700-normal.ttf
+  body=https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf
+  lang=https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.ttf
+  stat=https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf
 ```
 
 **Sources:** [Google Fonts](https://fonts.google.com/) | [Fontsource](https://fontsource.org/) | [Font Library](https://fontlibrary.org/)
@@ -329,7 +332,10 @@ Additional options vary by avatar style. See the specific style's documentation 
 overrides: |
   DARK_BG=#221133 DARK_FG=#FFDDEE RADIUS=16 BORDER=8
 fonts: |
-  head=fredoka:600@https://cdn.jsdelivr.net/fontsource/fonts/fredoka-one@latest/latin-400-normal.ttf
+  head=https://cdn.jsdelivr.net/fontsource/fonts/fredoka-one@latest/latin-400-normal.ttf
+  body=https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf
+  lang=https://cdn.jsdelivr.net/fontsource/fonts/nabla@latest/latin-400-normal.ttf
+  stat=https://cdn.jsdelivr.net/fontsource/fonts/monofett@latest/latin-400-normal.ttf
 logo: |
   style=funEmoji radius=20 backgroundType=solid
 ```
@@ -369,7 +375,7 @@ scripts/generate.sh \
   --overrides "DARK_BG=#221133 RADIUS=14" \
   --output assets/cards \
   --logo "style=glass radius=28" \
-  --fonts 'head=inter:800@https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-800-normal.ttf'
+  --fonts 'head=https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf'
 ```
 
 All GitHub Action options are available as CLI parameters with identical format.

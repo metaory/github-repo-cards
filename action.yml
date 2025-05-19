@@ -1,5 +1,5 @@
-name: 'Repo Card Generator'
-description: 'Generate PNG repository cards and commit them to the repo'
+name: 'GitHub Repo Cards'
+description: 'GitHub Action to generate sleek, static, customizable PNG cards for your repositories—fully offline, no servers, no embeds, no runtime dependencies.'
 author: 'metaory'
 
 inputs:
@@ -12,7 +12,7 @@ inputs:
     required: false
 
   fonts:
-    description: 'Optional: Section-specific font config. Each line: section=alias:weight@url-to-ttf (see README)'
+    description: 'Optional: Section-specific font config. Each line: section=url-to-ttf (see README). Sections: head, body, lang, stat.'
     required: false
 
   logo:

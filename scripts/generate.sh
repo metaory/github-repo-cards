@@ -7,8 +7,20 @@ OWNER="${GITHUB_ACTOR:-$(git config user.name)}"
 OUTPUT_DIR=cards
 OVERRIDES=
 LOGO='style=glass radius=28 backgroundType=gradientLinear'
-FONTS='head=bungee:700@https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf body=baloo-bold:800@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf stat=baloo-norm:600@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf'
+FONTS='head=https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf body=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf lang=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf stat=https://cdn.jsdelivr.net/fontsource/fonts/monofett@latest/latin-400-normal.ttf'
+# https://cdn.jsdelivr.net/fontsource/fonts/rampart-one@latest/latin-400-normal.ttf
+# https://cdn.jsdelivr.net/fontsource/fonts/blackout-two-am@latest/latin-400-normal.ttf
+# https://cdn.jsdelivr.net/fontsource/fonts/blackout-midnight@latest/latin-400-normal.ttf
+
+# https://cdn.jsdelivr.net/fontsource/fonts/monofett@latest/latin-400-normal.ttf
+# https://cdn.jsdelivr.net/fontsource/fonts/museomoderno@latest/latin-400-normal.ttf
+# https://cdn.jsdelivr.net/fontsource/fonts/darumadrop-one@latest/latin-400-normal.ttf
+# https://cdn.jsdelivr.net/fontsource/fonts/sniglet@latest/latin-400-normal.ttf
+
 REPOS=
+
+# ───────────────[ SHIM ]───────────────
+function date { gdate "$@" 2>/dev/null || /bin/date "$@"; }
 
 # ───────────────[ TRAP ]───────────────
 function on_error {
@@ -44,12 +56,9 @@ EOF
 
 # ───────────────[ DEBUG ]───────────────
 function log {
-  tput setaf 5
-  printf ' [%03d:' "${BASH_LINENO[0]}"
-  printf '%.4s]' "${FUNCNAME[1]:-main}"
-  tput setaf 6
-  printf ' %s\n' "$*"
-  tput sgr0
+  # Magenta for prefix, cyan for message
+  printf '\033[35m [%03d:%.4s]\033[36m %s\033[0m\n' \
+    "${BASH_LINENO[0]}" "${FUNCNAME[1]:-main}" "$*"
 }
 function logheader {
   printf '\n\033[1;36m╭─[ SETUP ]────────────────╴───╶╴──╶╴╴\033[0m\n'
@@ -57,6 +66,17 @@ function logheader {
     printf '\033[1;36m│\033[0m %-10s : \033[1m%s\033[0m\n' "$var" "${!var}"
   done
   printf '\033[1;36m╰─────────────────────────────────╴─╴─╴╴╴╴\033[0m\n'
+}
+
+# ───────────────[ TRACE ]───────────────
+TRACE_START=0
+function trace_enter {
+  TRACE_START=$(date +%s%3N)
+  printf '\033[32m[%s] ▶ %s\033[0m\n' "$(date '+%H:%M:%S')" "$1" >&2
+}
+function trace_exit {
+  printf '\033[31m[%s] ◀ %s (%d ms)\033[0m\n' \
+    "$(date '+%H:%M:%S')" "$1" "$(($(date +%s%3N) - TRACE_START))" >&2
 }
 
 # ───────────────[ OPTIONS ]───────────────
@@ -110,36 +130,33 @@ done
 TMP=$(mktemp -d)
 mkdir -p "${OUTPUT_DIR}" &>/dev/null || :
 
-# ───────────────────────────────────────
+# ──────────────────────────────────────
 # ───────────────[ FONTS ]───────────────
 function load_font {
+  trace_enter load_font
   log "Loading fonts..."
   mkdir -p ~/.local/share/fonts/TTF
 
-  H_FONT="sans-serif" H_WEIGHT="700"
-  B_FONT="sans-serif" B_WEIGHT="400"
-  S_FONT="sans-serif" S_WEIGHT="400"
+  H_FONT="sans-serif"
+  B_FONT="sans-serif"
+  LANG_FONT="sans-serif"
+  STAT_FONT="monospace"
 
   for font_def in $FONTS; do
-    [[ "$font_def" == *=*:*@* ]] || {
+    [[ "$font_def" == *=* ]] || {
       log "Invalid font format: $font_def"
       continue
     }
-
     section="${font_def%%=*}"
-    rest="${font_def#*=}"
-    alias="${rest%%:*}"
-    rest="${rest#*:}"
-    weight="${rest%%@*}"
-    url="${rest#*@}"
+    url="${font_def#*=}"
 
-    [[ -z "$section" || -z "$alias" || -z "$weight" || -z "$url" ]] && {
+    [[ -z "$section" || -z "$url" ]] && {
       log "Missing component in font definition: $font_def"
       continue
     }
 
-    [[ ! "$section" =~ ^(head|body|stat)$ ]] && {
-      log "Invalid section '$section' (must be head, body, or stat)"
+    [[ ! "$section" =~ ^(head|body|lang|stat)$ ]] && {
+      log "Invalid section '$section' (must be head, body, lang, or stat)"
       continue
     }
 
@@ -162,21 +179,24 @@ function load_font {
     fi
 
     font_family=$(fc-scan --format='%{family}\n' "$font_path" | head -n1)
-    font_family=${font_family:-$alias}
+    font_family=${font_family:-$(basename "$url" .ttf)}
 
     case "$section" in
-    head) H_FONT="$font_family" H_WEIGHT="$weight" ;;
-    body) B_FONT="$font_family" B_WEIGHT="$weight" ;;
-    stat) S_FONT="$font_family" S_WEIGHT="$weight" ;;
+    head) H_FONT="$font_family" ;;
+    body) B_FONT="$font_family" ;;
+    lang) LANG_FONT="$font_family" ;;
+    stat) STAT_FONT="$font_family" ;;
     esac
   done
 
   fc-cache -f
-  export H_FONT H_WEIGHT B_FONT B_WEIGHT S_FONT S_WEIGHT
+  export H_FONT B_FONT LANG_FONT STAT_FONT
+  trace_exit load_font
 }
 
 # ───────────────[ LOGO ]───────────────
 function load_logo {
+  trace_enter load_logo
   local style="" args=()
 
   for pair in $LOGO; do
@@ -194,7 +214,9 @@ function load_logo {
     exit 1
   }
 
-  printf '<image x="0" y="0" width="96" height="96" href="data:image/svg+xml;base64,%s"/>' "$(base64 -w0 <"$svg")"
+  printf '<image x="0" y="0" width="96" height="96" 
+    href="data:image/svg+xml;base64,%s"/>' "$(base64 -w0 <"$svg")"
+  trace_exit load_logo
 }
 
 # ───────────────[ THEME ]───────────────
@@ -229,13 +251,6 @@ function trunc {
   echo "$cut$ellipsis"
 }
 
-# function svg_text_width {
-#   local text="$1" font="$2" size="$3"
-#   local svg="/tmp/text.svg"
-#   echo "<svg xmlns='http://www.w3.org/2000/svg'><text font-family='$font' font-size='${size}px' x='0' y='14'>$text</text></svg>" >"$svg"
-#   inkscape --query-id=svg2 --query-width "$svg" 2>/dev/null
-# }
-
 function svg_text_width {
   local text="$1" font="$2" size="$3"
   local avg_width=14
@@ -243,16 +258,19 @@ function svg_text_width {
 }
 
 function pill_metrics {
+  trace_enter pill_metrics
   local prefix="$1" text="$2" font="$3" size="$4" padding="$5"
   local width center
   width=$(svg_text_width "$text" "$font" "$size")
   width=$((${width%.*} + 2 * padding))
   center=$((width / 2))
   export "${prefix}_RW"="$width" "${prefix}_RX"=0 "${prefix}_TX"="$center"
+  trace_exit pill_metrics
 }
 
 # ───────────────[ REPO ]───────────────
 function fetch_repo {
+  trace_enter fetch_repo
   local repo="$1"
 
   if $DEV; then
@@ -281,15 +299,17 @@ function fetch_repo {
       star: .stargazerCount,
       fork: .forkCount
     }'
+  trace_exit fetch_repo
 }
 
 # ──────────────────────────────────────
 # ───────────────[ MAIN ]───────────────
 function generate {
+  trace_enter generate
   IFS=$'\t' read -r name desc lang star fork < <(jq -r '[.name, .desc, .lang, .star, .fork] | @tsv' <<<"$1")
 
   load_font
-  pill_metrics LANG "$lang" "$S_FONT" 24 16
+  pill_metrics LANG "$lang" "$LANG_FONT" 24 16
 
   repo="${name}"
   name=$(trunc "$name" 400 32)
@@ -315,6 +335,7 @@ function generate {
 
     log "Generated ${filename}.png"
   done
+  trace_exit generate
 }
 
 # ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶
