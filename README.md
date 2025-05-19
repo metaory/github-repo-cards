@@ -1,11 +1,29 @@
-# Repo Card Generator
+<div align="center">
+    <img src=".github/assets/logo.svg" alt="logo" height="128" />
+    <h3>Repo Card Generator</h3>
+    <p>
+        Sleek, Modern, Static cards
+        <br>
+        for your GitHub repositories
+        <br>
+        Fully offline · Fully themeable · Full control
+    </p>
+    <img src="sample-cards/card_glitcher-app_dark.png" alt="card_glitcher-app-dark" width="40%" />
+    <img src="sample-cards/card_glitcher-app_light.png" alt="card_glitcher-app-light" width="40%" />
+    <img src="sample-cards/card_gradient-gl_dark.png" alt="card_gradient-gl_dark" width="40%" />
+    <img src="sample-cards/card_gradient-gl_light.png" alt="card_gradient-gl_light.png" width="40%" />
+</div>
 
-Generate modern, GitHub-style PNG cards for your repositories. Minimal, fast, and themeable.
 
-![Example Card](https://placehold.co/600x300/181825/cdd6f4?text=Example+Card)
+No runtime. No APIs. No server. No embeds. Cards are generated and committed directly into your repository.
 
-**Why Repo Card Generator?**
-No servers. No manual steps. No ugly cards. Just beautiful, automated, and fully customizable repo cards, committed directly to your repo, with zero third-party dependencies or network latency.
+---
+
+> [!CAUTION]
+> DO NOT USE
+> 🚧 NOT PRODUCTION READY
+
+---
 
 ## Table of Contents
 

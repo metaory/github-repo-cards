@@ -7,7 +7,7 @@ OWNER="${GITHUB_ACTOR:-$(git config user.name)}"
 OUTPUT_DIR=cards
 OVERRIDES=
 LOGO='style=glass radius=28 backgroundType=gradientLinear'
-FONTS='head=bungee:700@https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf body=baloo-bold:800@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf stat=baloo-norm:400@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf'
+FONTS='head=bungee:700@https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf body=baloo-bold:800@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf stat=baloo-norm:600@https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf'
 REPOS=
 
 # ───────────────[ TRAP ]───────────────
@@ -20,7 +20,7 @@ function on_error {
 
 function cleanup {
   log "Cleaning up temporary files..."
-  [[ -d "$TMP" ]] && rm -rf "$TMP"
+  # [[ -d "$TMP" ]] && rm -rf "$TMP"
 }
 
 trap 'on_error $LINENO "$BASH_COMMAND"' ERR
@@ -292,7 +292,7 @@ function generate {
   pill_metrics LANG "$lang" "$S_FONT" 24 16
 
   repo="${name}"
-  name=$(trunc "$name" 400 44)
+  name=$(trunc "$name" 400 32)
   desc=$(trunc "$desc" 1400 26)
 
   export name desc lang star fork logo

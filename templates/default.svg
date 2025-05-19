@@ -3,16 +3,15 @@
 
   <!-- Header row: avatar + title -->
   <g id="head" transform="translate(15,20)"> ${logo} <flowRoot font-family="${H_FONT}"
-      font-size="36px"
+      font-size="32px"
       font-weight="${H_WEIGHT}">
       <flowRegion>
-        <rect x="120" y="0" width="300" height="100" />
+        <rect x="120" y="10" width="300" height="100" />
       </flowRegion>
       <flowPara fill="${AC}">${name}</flowPara>
     </flowRoot>
   </g>
 
-  <!-- Description row: full width -->
   <flowRoot id="body" transform="translate(15,130)" font-family="${B_FONT}" font-size="26px"
     font-weight="${B_WEIGHT}"
     fill="${FG}">
@@ -22,18 +21,23 @@
     <flowPara>${desc}</flowPara>
   </flowRoot>
 
-  <!-- Stats row: pill + icons + numbers -->
   <g id="stat" transform="translate(40,240)" font-family="${S_FONT}" font-weight="${S_WEIGHT}">
-    <!-- <rect x="0" y="0" width="130" height="48" rx="24" fill="${AC}" stroke="${HL}" stroke-width="${BORDER}" /> -->
-    <!-- <text x="18" y="32" font-size="26px" fill="${HL}">${lang}</text> -->
 
-    <rect x="${LANG_RX}" y="0" width="${LANG_RW}" height="48" rx="24" fill="${AC}" stroke="${HL}" stroke-width="${BORDER}" />
-    <text x="${LANG_TX}" y="32"  font-size="24px" font-weight="${S_WEIGHT}" fill="${HL}" text-anchor="middle">${lang}</text>
+    <rect x="${LANG_RX}" y="0" width="${LANG_RW}" height="48" rx="24" fill="${AC}" stroke="${HL}"
+      stroke-width="${BORDER}" />
+    <text x="${LANG_TX}" y="32" font-size="24px" font-weight="${S_WEIGHT}" fill="${HL}"
+      text-anchor="middle">${lang}</text>
 
-    <text x="160" y="34" font-size="32px" fill="${AC}">&#9733;</text>
-    <text x="196" y="34" font-size="24px" fill="${HL}">${star}</text>
+    <g id="star" transform="translate(200, 4) scale(1.4)">
+      <path fill="${AC}"
+        d="M9.153 5.408C10.42 3.136 11.053 2 12 2s1.58 1.136 2.847 3.408l.328.588c.36.646.54.969.82 1.182s.63.292 1.33.45l.636.144c2.46.557 3.689.835 3.982 1.776c.292.94-.546 1.921-2.223 3.882l-.434.507c-.476.557-.715.836-.822 1.18c-.107.345-.071.717.001 1.46l.066.677c.253 2.617.38 3.925-.386 4.506s-1.918.051-4.22-1.009l-.597-.274c-.654-.302-.981-.452-1.328-.452s-.674.15-1.328.452l-.596.274c-2.303 1.06-3.455 1.59-4.22 1.01c-.767-.582-.64-1.89-.387-4.507l.066-.676c.072-.744.108-1.116 0-1.46c-.106-.345-.345-.624-.821-1.18l-.434-.508c-1.677-1.96-2.515-2.941-2.223-3.882S3.58 8.328 6.04 7.772l.636-.144c.699-.158 1.048-.237 1.329-.45s.46-.536.82-1.182z" />
+      <text x="26" y="20" dominant-baseline="top" font-size="20px" font-weight="${S_WEIGHT}" fill="${FG}">${star}</text>
+    </g>
 
-    <text x="260" y="34" font-size="32px" fill="${AC}">&#9873;</text>
-    <text x="296" y="34" font-size="24px" fill="${HL}">${fork}</text>
+    <g id="fork" transform="translate(320, 8) scale(1.4)">
+      <path fill="${AC}"
+        d="M8 18a1 1 0 1 0 0-2a1 1 0 0 0 0 2m1.033-3.817A3.001 3.001 0 1 1 7 14.17v-1.047q0-.111.008-.221a1 1 0 0 0-.462-.637L3.46 10.42A3 3 0 0 1 2 7.845V5.829a3.001 3.001 0 1 1 2 0v2.016a1 1 0 0 0 .487.858l3.086 1.846a3 3 0 0 1 .443.324a3 3 0 0 1 .444-.324l3.086-1.846a1 1 0 0 0 .487-.858V5.841A3.001 3.001 0 0 1 13 0a3 3 0 0 1 1.033 5.817v2.028a3 3 0 0 1-1.46 2.575l-3.086 1.846a1 1 0 0 0-.462.637q.008.11.008.22zM3 4a1 1 0 1 0 0-2a1 1 0 0 0 0 2m10 0a1 1 0 1 0 0-2a1 1 0 0 0 0 2" />
+      <text x="22" y="16" dominant-baseline="top" font-size="20px" font-weight="${S_WEIGHT}" fill="${FG}">${fork}</text>
+    </g>
   </g>
 </svg>
