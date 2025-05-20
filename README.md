@@ -192,8 +192,10 @@ Simple color and layout adjustments:
 
 ```yaml
 overrides: |
-  BG=#ffffff  RADIUS=10  # Background & border radius
-  FG=#000000  BORDER=2   # Text color & border width
+  BG=#ffffff  # Background
+  FG=#000000  # Text color
+  LANG_BORDER_WIDTH=8    # Language pill border width
+  LANG_RADIUS=24         # Language pill border radius
 ```
 
 > [!TIP]
@@ -206,13 +208,14 @@ overrides: |
   # Light mode
   LIGHT_BG=#FFEEDD  LIGHT_HL=#4477DD
   LIGHT_FG=#221133  LIGHT_AC=#22AA44
+  LIGHT_LANG_BORDER_WIDTH=8
+  LIGHT_LANG_RADIUS=24
 
   # Dark mode
   DARK_BG=#112233   DARK_HL=#FF88AA
   DARK_FG=#CCDDFF   DARK_AC=#44BBFF
-
-  # Universal
-  RADIUS=14  BORDER=6
+  DARK_LANG_BORDER_WIDTH=8
+  DARK_LANG_RADIUS=24
 ```
 
 **Variables:**
@@ -220,8 +223,8 @@ overrides: |
 - `FG`: Text color
 - `HL`: Highlight color (titles)
 - `AC`: Accent color (icons)
-- `RADIUS`: Card rounded corners
-- `BORDER`: Border thickness
+- `LANG_BORDER_WIDTH`: Language pill border thickness
+- `LANG_RADIUS`: Language pill border radius
 </details>
 
 <details>

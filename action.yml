@@ -8,7 +8,7 @@ inputs:
     required: true
 
   overrides:
-    description: 'Style overrides in the form KEY=value. Can be multiple per line. Prefix with LIGHT_ or DARK_ for theme-specific values, e.g. DARK_BG=#181825 LIGHT_FG=#cdd6f4 RADIUS=10 BORDER=7'
+    description: 'Style overrides in the form KEY=value. Can be multiple per line. Prefix with LIGHT_ or DARK_ for theme-specific values, e.g. DARK_BG=#181825 LIGHT_FG=#cdd6f4 LANG_RADIUS=24 LANG_BORDER_WIDTH=8'
     required: false
 
   fonts:

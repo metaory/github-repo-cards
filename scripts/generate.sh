@@ -10,13 +10,14 @@ OVERRIDES=
 DEV=false
 REPOS=
 FONTS='
-head=https://cdn.jsdelivr.net/fontsource/fonts/bungee@latest/latin-400-normal.ttf
-lang=https://cdn.jsdelivr.net/fontsource/fonts/blackout-two-am@latest/latin-400-normal.ttf
+head=https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf
 body=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
-stat=https://cdn.jsdelivr.net/fontsource/fonts/rampart-one@latest/latin-400-normal.ttf'
+lang=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
+stat=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
+'
+# lang=https://cdn.jsdelivr.net/fontsource/fonts/blackout-two-am@latest/latin-400-normal.ttf
 FONTS=$(tr '\n' ' ' <<<"$FONTS")
 FONT_DEST="$HOME/.local/share/fonts/TTF"
-# body=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
 
 # ───────────────[ OS DETECT ]───────────────
 [[ "$(uname)" == "Darwin" ]] &&
