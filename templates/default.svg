@@ -3,7 +3,7 @@
 
   <!-- Header row: avatar + title -->
   <g id="head" transform="translate(15,20)"> ${logo} <flowRoot font-family="${FONT_HEAD}" font-size="32px"
-      font-weight="${H_WEIGHT}">
+      font-weight="400">
       <flowRegion>
         <rect x="120" y="10" width="300" height="100" />
       </flowRegion>
@@ -11,7 +11,7 @@
     </flowRoot>
   </g>
 
-  <flowRoot id="body" transform="translate(15,130)" font-family="${FONT_BODY}" font-size="26px" font-weight="${B_WEIGHT}"
+  <flowRoot id="body" transform="translate(15,130)" font-family="${FONT_BODY}" font-size="26px" font-weight="400"
     fill="${FG}">
     <flowRegion>
       <rect x="0" y="0" width="420" height="100" />
@@ -21,7 +21,7 @@
 
   <g id="stat" transform="translate(40,240)">
     <rect x="${LANG_RX}" y="0" width="${LANG_RW}" height="48" rx="24" fill="${AC}" stroke="${HL}"
-      stroke-width="${BORDER}" />
+      stroke-width="${BORDER}" fill-opacity="0" stroke-opacity="0" />
     <text x="${LANG_TX}" y="32" font-size="24px" font-family="${FONT_LANG}" font-weight="400" fill="${HL}"
       text-anchor="middle">${lang}</text>
 

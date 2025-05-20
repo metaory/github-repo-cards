@@ -10,12 +10,13 @@ OVERRIDES=
 DEV=false
 REPOS=
 FONTS='
-head=https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf
-body=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
-lang=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
-stat=https://cdn.jsdelivr.net/fontsource/fonts/monofett@latest/latin-400-normal.ttf'
+head=https://cdn.jsdelivr.net/fontsource/fonts/bungee@latest/latin-400-normal.ttf
+lang=https://cdn.jsdelivr.net/fontsource/fonts/blackout-two-am@latest/latin-400-normal.ttf
+body=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
+stat=https://cdn.jsdelivr.net/fontsource/fonts/rampart-one@latest/latin-400-normal.ttf'
 FONTS=$(tr '\n' ' ' <<<"$FONTS")
 FONT_DEST="$HOME/.local/share/fonts/TTF"
+# body=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
 
 # ───────────────[ OS DETECT ]───────────────
 [[ "$(uname)" == "Darwin" ]] &&
@@ -190,7 +191,7 @@ function load_font {
       log "Font already exists: $filename"
     fi
 
-    font_family=$(fc-scan --format='%{family}\n' "$font_path" | head -n1)
+    font_family=$(fc-scan --format='%{fullname}, %{family}\n' "$font_path" | head -n1)
     # font_family=${font_family:-$(basename "$url" .ttf)}
     # echo "::::::::::: $section ::::: $font_family"
 
@@ -324,6 +325,7 @@ function generate {
 
   load_font
   pill_metrics LANG "$lang" "$FONT_LANG" 24 16
+  lang="&#32;${lang}&#32;"
 
   repo="${name}"
   name=$(trunc "$name" 400 32)
