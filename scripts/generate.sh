@@ -15,28 +15,25 @@ body=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.t
 lang=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
 stat=https://cdn.jsdelivr.net/fontsource/fonts/monofett@latest/latin-400-normal.ttf'
 FONTS=$(tr '\n' ' ' <<<"$FONTS")
-# https://cdn.jsdelivr.net/fontsource/fonts/rampart-one@latest/latin-400-normal.ttf
-# https://cdn.jsdelivr.net/fontsource/fonts/blackout-two-am@latest/latin-400-normal.ttf
-# https://cdn.jsdelivr.net/fontsource/fonts/blackout-midnight@latest/latin-400-normal.ttf
+FONT_DEST="$HOME/.local/share/fonts/TTF"
 
-# https://cdn.jsdelivr.net/fontsource/fonts/museomoderno@latest/latin-400-normal.ttf
-# https://cdn.jsdelivr.net/fontsource/fonts/darumadrop-one@latest/latin-400-normal.ttf
-# https://cdn.jsdelivr.net/fontsource/fonts/sniglet@latest/latin-400-normal.ttf
-
-# ───────────────[ SHIM ]───────────────
-function date { gdate "$@" 2>/dev/null || /bin/date "$@"; }
+# ───────────────[ OS DETECT ]───────────────
+[[ "$(uname)" == "Darwin" ]] &&
+  FONT_DEST="/Library/Fonts" &&
+  function date { gdate "$@" 2>/dev/null || /bin/date "$@"; }
 
 # ───────────────[ TRAP ]───────────────
 function on_error {
   local exit_code=$?
   local line_no=$1
   local cmd=$2
-  printf '[%s] ❌ ERROR at line %s: %s (exit %s)\n' "$(date '+%H:%M:%S')" "$line_no" "$cmd" "$exit_code" >&2
+  printf '[%s] ❌ ERROR at line %s: %s (exit %s)\n' \
+    "$(date '+%H:%M:%S')" "$line_no" "$cmd" "$exit_code" >&2
 }
 
 function cleanup {
   log "Cleaning up temporary files..."
-  # [[ -d "$TMP" ]] && rm -rf "$TMP"
+  [ $DEV = true ] || rm -rf "$TMP"
 }
 
 trap 'on_error $LINENO "$BASH_COMMAND"' ERR
@@ -47,21 +44,20 @@ trap 'log "Interrupted"; cleanup; exit 1' INT
 function usage {
   cat <<EOF
 Usage:
-  --repos NAME...    Space separated repositories (required)
-  --overrides EXT    Space separated overrides
-  --fonts EXT        Space separated fonts
-  --logo EXT         Logo dicebear options
-  --output DIR       Output directory (default: cards)
-  --dev              Use mock data (no GitHub API)
-  --template TEMPLATE
-  -h, --help         Show this help
+  --repos NAME...      Space separated repository names (required)
+  --overrides KEY=VAL  Space separated theme overrides
+  --fonts URL=NAME     Space separated font URLs and names
+  --logo OPTIONS       DiceBear logo style options
+  --template NAME      Template name (default: default)
+  --output DIR         Output directory (default: cards)
+  --dev                Use mock data instead of GitHub API
+  -h, --help           Show this help
 EOF
   exit 0
 }
 
 # ───────────────[ DEBUG ]───────────────
 function log {
-  # Magenta for prefix, cyan for message
   printf '\033[35m [%03d:%.4s]\033[36m %s\033[0m\n' \
     "${BASH_LINENO[0]}" "${FUNCNAME[1]:-main}" "$*"
 }
@@ -135,7 +131,6 @@ for cmd in jq gh curl base64 envsubst inkscape dicebear; do
   }
 done
 
-# Template validation (SVG and ENV)
 for f in templates/${TEMPLATE}.{svg,env}; do
   [[ -f "$f" ]] || {
     log "❌ Template file not found: $f"
@@ -152,12 +147,12 @@ mkdir -p "${OUTPUT_DIR}" &>/dev/null || :
 function load_font {
   trace_enter load_font
   log "Loading fonts..."
-  mkdir -p ~/.local/share/fonts/TTF
+  mkdir -p "$FONT_DEST"
 
-  H_FONT="sans-serif"
-  B_FONT="sans-serif"
-  LANG_FONT="sans-serif"
-  STAT_FONT="monospace"
+  FONT_HEAD="sans-serif"
+  FONT_BODY="sans-serif"
+  FONT_LANG="sans-serif"
+  FONT_STAT="monospace"
 
   for font_def in $FONTS; do
     [[ "$font_def" == *=* ]] || {
@@ -182,8 +177,8 @@ function load_font {
       continue
     }
 
-    filename="${section}_$(basename "$url")"
-    font_path=~/.local/share/fonts/TTF/"$filename"
+    filename="$(md5 <<<"$url").ttf"
+    font_path="$FONT_DEST/$filename"
 
     if [[ ! -f "$font_path" ]]; then
       log "Downloading font: $url"
@@ -196,18 +191,20 @@ function load_font {
     fi
 
     font_family=$(fc-scan --format='%{family}\n' "$font_path" | head -n1)
-    font_family=${font_family:-$(basename "$url" .ttf)}
+    # font_family=${font_family:-$(basename "$url" .ttf)}
+    # echo "::::::::::: $section ::::: $font_family"
 
     case "$section" in
-    head) H_FONT="$font_family" ;;
-    body) B_FONT="$font_family" ;;
-    lang) LANG_FONT="$font_family" ;;
-    stat) STAT_FONT="$font_family" ;;
+    head) FONT_HEAD="$font_family" ;;
+    body) FONT_BODY="$font_family" ;;
+    lang) FONT_LANG="$font_family" ;;
+    stat) FONT_STAT="$font_family" ;;
     esac
   done
 
   fc-cache -f
-  export H_FONT B_FONT LANG_FONT STAT_FONT
+  export FONT_HEAD FONT_BODY FONT_LANG FONT_STAT
+  log "Font families: HEAD='$FONT_HEAD' BODY='$FONT_BODY' LANG='$FONT_LANG' STAT='$FONT_STAT'"
   trace_exit load_font
 }
 
@@ -326,7 +323,7 @@ function generate {
   IFS=$'\t' read -r name desc lang star fork < <(jq -r '[.name, .desc, .lang, .star, .fork] | @tsv' <<<"$1")
 
   load_font
-  pill_metrics LANG "$lang" "$LANG_FONT" 24 16
+  pill_metrics LANG "$lang" "$FONT_LANG" 24 16
 
   repo="${name}"
   name=$(trunc "$name" 400 32)
