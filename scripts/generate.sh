@@ -229,7 +229,7 @@ function load_logo {
     exit 1
   }
 
-  printf '<image x="0" y="0" width="80" height="80" 
+  printf '<image x="0" y="0" width="64" height="64" 
     href="data:image/svg+xml;base64,%s"/>' "$(base64 -w0 <"$svg")"
   trace_exit load_logo
 }
@@ -250,7 +250,7 @@ function load_theme {
 
 # ───────────────[ POS ]───────────────
 function trunc {
-  local text="$1" max_width=$2 font_size=${3:-24} ellipsis="…"
+  local text="$1" max_width=$2 font_size=${3:-24} ellipsis="..."
   local avg_char_width=$((font_size / 2))
   local max_chars=$((max_width / avg_char_width))
 
@@ -263,7 +263,7 @@ function trunc {
   cut="${cut% *}"
   [[ -z $cut ]] && cut="${text:0:max_chars}"
 
-  echo "$cut$ellipsis"
+  echo "${cut}${ellipsis}"
 }
 
 function svg_text_width {
@@ -328,8 +328,8 @@ function generate {
   lang="&#32;${lang}&#32;"
 
   repo="${name}"
-  name=$(trunc "$name" 400 32)
-  desc=$(trunc "$desc" 1400 26)
+  name=$(trunc "$name" 390 32)
+  desc=$(trunc "$desc" 1800 26)
 
   export name desc lang star fork logo
 

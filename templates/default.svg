@@ -5,16 +5,16 @@
   <g id="head" transform="translate(16,16)"> ${logo} <flowRoot font-family="${FONT_HEAD}" font-size="32px"
       font-weight="400">
       <flowRegion>
-        <rect x="120" y="10" width="300" height="100" />
+        <rect x="80" y="10" width="335" height="100" />
       </flowRegion>
-      <flowPara fill="${HEAD_FG}">${name}</flowPara>
+      <flowPara fill="${HEAD_FG}" stroke="${HEAD_STROKE}" stroke-width="${HEAD_STROKE_WIDTH}">${name}</flowPara>
     </flowRoot>
   </g>
 
-  <flowRoot id="body" transform="translate(15,130)" font-family="${FONT_BODY}" font-size="26px" font-weight="400"
+  <flowRoot id="body" transform="translate(15,110)" font-family="${FONT_BODY}" font-size="26px" font-weight="400"
     fill="${CARD_FG}">
     <flowRegion>
-      <rect x="0" y="0" width="420" height="100" />
+      <rect x="0" y="0" width="420" height="135" />
     </flowRegion>
     <flowPara>${desc}</flowPara>
   </flowRoot>

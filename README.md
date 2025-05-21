@@ -145,7 +145,7 @@ on:
   schedule:
     - cron: '0 0 * * 0'  # Weekly on Sundays
   push:
-    branches: [ main ]
+    branches: [ master ]
     paths:
       - '.github/workflows/repo-cards.yml'
 
@@ -200,6 +200,8 @@ overrides: |
   LANG_RECT_RADIUS=24         # Language rectangle border radius
   LANG_RECT_OPACITY=1         # Opacity of the language rectangle (0 = transparent, 1 = opaque)
   STAT_ICONS=#FF88EE          # Stat icon color (star, fork)
+  HEAD_STROKE=#FF66FF         # Header text stroke color
+  HEAD_STROKE_WIDTH=2         # Header text stroke width
 ```
 
 > [!TIP]
@@ -232,6 +234,8 @@ _Color & Theme:_
 - `CARD_BG`: Card background color
 - `CARD_FG`: Card foreground/text color
 - `HEAD_FG`: Header/title color
+- `HEAD_STROKE`: Header/title stroke color
+- `HEAD_STROKE_WIDTH`: Header/title stroke width
 - `STAT_FG`: Stat number color (stars, forks)
 - `STAT_ICONS`: Stat icon color (star, fork)
 - `LANG_FG`: Language text color
