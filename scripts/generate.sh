@@ -12,10 +12,9 @@ REPOS=
 FONTS='
 head=https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf
 body=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
-lang=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-700-normal.ttf
-stat=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
+lang=https://cdn.jsdelivr.net/fontsource/fonts/blackout-two-am@latest/latin-400-normal.ttf
+stat=https://cdn.jsdelivr.net/fontsource/fonts/rampart-one@latest/latin-400-normal.ttf
 '
-# lang=https://cdn.jsdelivr.net/fontsource/fonts/blackout-two-am@latest/latin-400-normal.ttf
 FONTS=$(tr '\n' ' ' <<<"$FONTS")
 FONT_DEST="$HOME/.local/share/fonts/TTF"
 
@@ -230,7 +229,7 @@ function load_logo {
     exit 1
   }
 
-  printf '<image x="0" y="0" width="96" height="96" 
+  printf '<image x="0" y="0" width="80" height="80" 
     href="data:image/svg+xml;base64,%s"/>' "$(base64 -w0 <"$svg")"
   trace_exit load_logo
 }

@@ -188,43 +188,61 @@ jobs:
 <details>
 <summary>Style Overrides</summary>
 
+Any variable can be prefixed with `DARK_` or `LIGHT_` to set theme-specific values. If you do not use a prefix, the value will be used for both light and dark themes. This applies to all variables—including those like `LANG_RECT_BORDER_WIDTH` and `LANG_RECT_RADIUS`, which are typically universal, but can be set per theme if you wish.
+
 Simple color and layout adjustments:
 
 ```yaml
 overrides: |
-  BG=#ffffff  # Background
-  FG=#000000  # Text color
-  LANG_BORDER_WIDTH=8    # Language pill border width
-  LANG_RADIUS=24         # Language pill border radius
+  CARD_BG=#ffffff             # Card background
+  CARD_FG=#000000             # Card text color
+  LANG_RECT_BORDER_WIDTH=8    # Language rectangle border width
+  LANG_RECT_RADIUS=24         # Language rectangle border radius
+  LANG_RECT_OPACITY=1         # Opacity of the language rectangle (0 = transparent, 1 = opaque)
+  STAT_ICONS=#FF88EE          # Stat icon color (star, fork)
 ```
 
 > [!TIP]
-> You can target specific color modes by prefixing variables with `LIGHT_` or `DARK_` for theme-specific styling.
+> You can target specific color modes by prefixing variables with `LIGHT_` or `DARK_` for theme-specific styling. If you set both, each theme will use its value; if you set only the unprefixed variable, both themes will use that value. This applies to all variables.
 
 Theme-specific overrides with `LIGHT_` or `DARK_` prefixes:
 
 ```yaml
 overrides: |
   # Light mode
-  LIGHT_BG=#FFEEDD  LIGHT_HL=#4477DD
-  LIGHT_FG=#221133  LIGHT_AC=#22AA44
-  LIGHT_LANG_BORDER_WIDTH=8
-  LIGHT_LANG_RADIUS=24
+  LIGHT_CARD_BG=#FFEEDD
+  LIGHT_CARD_FG=#221133
+  LIGHT_LANG_RECT_OPACITY=1
+  LIGHT_LANG_RECT_RADIUS=20
+  LIGHT_LANG_RECT_BORDER_WIDTH=6
 
   # Dark mode
-  DARK_BG=#112233   DARK_HL=#FF88AA
-  DARK_FG=#CCDDFF   DARK_AC=#44BBFF
-  DARK_LANG_BORDER_WIDTH=8
-  DARK_LANG_RADIUS=24
+  DARK_CARD_BG=#112233
+  DARK_CARD_FG=#CCDDFF
+  DARK_LANG_RECT_OPACITY=1
+  DARK_LANG_RECT_RADIUS=28
+  DARK_LANG_RECT_BORDER_WIDTH=10
 ```
 
 **Variables:**
-- `BG`: Background color
-- `FG`: Text color
-- `HL`: Highlight color (titles)
-- `AC`: Accent color (icons)
-- `LANG_BORDER_WIDTH`: Language pill border thickness
-- `LANG_RADIUS`: Language pill border radius
+
+Any variable can be prefixed with `DARK_` or `LIGHT_` for theme-specific overrides.
+
+_Color & Theme:_
+- `CARD_BG`: Card background color
+- `CARD_FG`: Card foreground/text color
+- `HEAD_FG`: Header/title color
+- `STAT_FG`: Stat number color (stars, forks)
+- `STAT_ICONS`: Stat icon color (star, fork)
+- `LANG_FG`: Language text color
+- `LANG_RECT_BG`: Language rectangle background color
+- `LANG_RECT_BORDER`: Language rectangle border color
+- `LANG_RECT_BORDER_WIDTH`: Language rectangle border thickness
+- `LANG_RECT_RADIUS`: Language rectangle border radius
+- `LANG_RECT_OPACITY`: Language rectangle opacity (0–1)
+
+_Shape/Other:_
+- `RADIUS`: Card border radius
 </details>
 
 <details>
@@ -294,9 +312,9 @@ More options for the DiceBear-generated avatar:
 
 ```yaml
 logo: |
-  style=glass           # Required parameter
-  radius=28             # Rounded corners
-  backgroundType=gradientLinear
+  style=glass                     # Required parameter
+  radius=28                       # Rounded corners
+  backgroundType=gradientLinear   # Background type
 ```
 
 **Key Parameters:**
@@ -317,132 +335,24 @@ logo: |
 - `flip`: Boolean to flip horizontally
 - `rotate`: Degree of rotation (0-360)
 - `scale`: Scale percentage (0-200)
-- `radius`: Corner roundness (0-50)
-- `size`: Output size in pixels
-- `backgroundColor`: Hex color code(s) for background
-- `backgroundType`: Background pattern type
-- `backgroundRotation`: Degree range for gradient rotation
-- `translateX`: Horizontal offset (-100 to 100)
-- `translateY`: Vertical offset (-100 to 100)
-- `clip`: Boolean to clip to shape boundary
-- `randomizeIds`: Boolean to randomize SVG IDs
-
-Additional options vary by avatar style. See the specific style's documentation for all available options.
 </details>
-</details>
-
-<details>
-<summary>Customization Examples</summary>
-
-```yaml
-overrides: |
-  DARK_BG=#221133 DARK_FG=#FFDDEE RADIUS=16 BORDER=8
-fonts: |
-  head=https://cdn.jsdelivr.net/fontsource/fonts/fredoka-one@latest/latin-400-normal.ttf
-  body=https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf
-  lang=https://cdn.jsdelivr.net/fontsource/fonts/nabla@latest/latin-400-normal.ttf
-  stat=https://cdn.jsdelivr.net/fontsource/fonts/monofett@latest/latin-400-normal.ttf
-logo: |
-  style=funEmoji radius=20 backgroundType=solid
-```
-
-- Try mixing and matching fonts, colors, and logo styles for unique cards.
-- All options can be combined in your workflow or CLI usage.
 </details>
 
 ## CLI Usage
 
-> [!NOTE]
-> GitHub Actions is the recommended way to use this tool. CLI usage is provided for local testing and advanced users.
+```bash
+# Generate cards for all repositories
+github-repo-cards --repositories "repo-cards dotfiles" --template default --output cards
 
-Generate cards locally:
-
-```sh
-scripts/generate.sh --repos "repo-cards dotfiles" --template default
+# Generate cards for a specific repository
+github-repo-cards --repositories "repo-cards" --template default --output cards
 ```
-
-<details>
-<summary>Advanced CLI Example</summary>
-
-> [!IMPORTANT]
-> The CLI requires several system dependencies to be installed first.
-
-**Requirements:**
-- bash
-- jq
-- gh (GitHub CLI)
-- inkscape
-- curl
-- dicebear
-
-```sh
-scripts/generate.sh \
-  --repos "repo-cards dotfiles" \
-  --overrides "DARK_BG=#221133 RADIUS=14" \
-  --output assets/cards \
-  --logo "style=glass radius=28" \
-  --fonts 'head=https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf' \
-  --template default
-```
-
-All GitHub Action options are available as CLI parameters with identical format.
-</details>
 
 ## Similar Tools
 
-**Repo Card Generator** is a modern, minimal, and fully customizable solution for generating and committing static PNG repo cards directly to your repository—no servers, no manual steps, no third-party dependencies, and no outdated visuals.
-
-### Key Differences
-
-- **No Server Dependency**: Most other tools (like [gh-card](https://github.com/nwtgck/gh-card)) require you to embed an image URL that points to their server. This:
-  - Adds network latency and reliability issues
-  - Creates a dependency on a third-party service
-  - Raises privacy and security concerns
-  - Can break if the service goes down or changes
-- **Automated Workflow**: Our solution is a GitHub Action that runs on your repo, generates the cards, and commits them automatically. No manual steps, no external servers, no extra maintenance.
-- **Extreme Customizability**: Style, fonts, logos, and layout are all configurable with simple overrides. Competing tools offer little or no customization.
-- **Modern, Minimal, and Beautiful**: Many alternatives are visually outdated or cluttered. This project is designed for modern web-first aesthetics.
-- **No Language Lock-in**: No need to install Python, Go, or Node.js libraries locally. Everything runs in the GitHub Actions environment or via a simple Bash CLI.
-
-#### Notable Alternatives
-
-- [gh-card](https://github.com/nwtgck/gh-card):
-  - Web app, requires embedding a remote image URL
-  - Minimal customization, limited to GitHub look
-  - Server dependency, not workflow-integrated
-- [GitHub-Repo-Cards-Generator](https://github.com/claitz/GitHub-Repo-Cards-Generator):
-  - Manual, not maintained, limited customization
-  - Outdated visuals
-- [user-statistician](https://github.com/cicirello/user-statistician):
-  - Python-based, does many things but not focused on repo cards
-  - Visuals are cluttered and not modern
-- [github-cards](https://github.com/lepture/github-cards):
-  - JavaScript library, manual integration
-  - No automation, limited style
-- [github_link_creator](https://github.com/po3rin/github_link_creator):
-  - Go CLI, manual, no customization, outdated visuals
-
-| Tool                                 | Server Dependency | Approach             | Automation | Customization |
-|--------------------------------------|-------------------|----------------------|------------|---------------|
-| **Repo Card Generator (this)**           | None              | GitHub Action, CLI   | Full       | Full          |
-| [gh-card]                              | Yes               | Web app/server       | Partial    | Minimal       |
-| [GitHub-Repo-Cards-Generator]          | None              | Manual script        | None       | Minimal       |
-| [user-statistician]                    | None              | Python Action        | Partial    | Minimal       |
-| [github-cards]                         | None              | JS library           | None       | Minimal       |
-| [github_link_creator]                  | None              | Go CLI               | None       | None          |
-
----
+- [Repo Cards](https://github.com/repo-cards/repo-cards)
+- [GitHub Profile README](https://github.com/anuraghazra/github-readme-stats)
 
 ## License
 
-[MIT](LICENSE)
-
-## Templates
-
-You can select a card layout preset using the `template` option. The default is `default`, which uses `templates/default.svg`.
-
-```yaml
-template: default
-```
-
-More templates (e.g., `compact`, `modern`, etc.) can be added in the future. To use a custom template, add your SVG to the `templates/` directory and set `template` to its name (without `.svg`).
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
