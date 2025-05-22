@@ -2,20 +2,12 @@
 set -euo pipefail
 
 # ───────────────[ DEFAULTS ]───────────────
-LOGO='style=glass radius=28 backgroundType=gradientLinear'
+AVATAR='style=glass radius=28 backgroundType=gradientLinear'
 OWNER="${GITHUB_ACTOR:-$(git config user.name)}"
 OUTPUT_DIR=cards
-TEMPLATE=default
-OVERRIDES=
+THEME=default
 DEV=false
 REPOS=
-FONTS='
-head=https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf
-body=https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf
-lang=https://cdn.jsdelivr.net/fontsource/fonts/blackout-two-am@latest/latin-400-normal.ttf
-stat=https://cdn.jsdelivr.net/fontsource/fonts/rampart-one@latest/latin-400-normal.ttf
-'
-FONTS=$(tr '\n' ' ' <<<"$FONTS")
 FONT_DEST="$HOME/.local/share/fonts/TTF"
 
 # ───────────────[ OS DETECT ]───────────────
@@ -46,11 +38,9 @@ function usage {
   cat <<EOF
 Usage:
   --repos NAME...      Space separated repository names (required)
-  --overrides KEY=VAL  Space separated theme overrides
-  --fonts URL=NAME     Space separated font URLs and names
-  --logo OPTIONS       DiceBear logo style options
-  --template NAME      Template name (default: default)
+  --avatar OPTIONS     DiceBear avatar style options
   --output DIR         Output directory (default: cards)
+  --theme NAME         Theme name (default: default)
   --dev                Use mock data instead of GitHub API
   -h, --help           Show this help
 EOF
@@ -88,16 +78,8 @@ while [[ $# -gt 0 ]]; do
     REPOS="$2"
     shift 2
     ;;
-  --overrides)
-    OVERRIDES="$2"
-    shift 2
-    ;;
-  --logo)
-    LOGO="$2"
-    shift 2
-    ;;
-  --fonts)
-    FONTS="$2"
+  --avatar)
+    AVATAR="$2"
     shift 2
     ;;
   --output)
@@ -108,8 +90,8 @@ while [[ $# -gt 0 ]]; do
     DEV=true
     shift
     ;;
-  --template)
-    TEMPLATE="$2"
+  --theme)
+    THEME="$2"
     shift 2
     ;;
   -h | --help) usage ;;
@@ -132,12 +114,10 @@ for cmd in jq gh curl base64 envsubst inkscape dicebear; do
   }
 done
 
-for f in templates/${TEMPLATE}.{svg,env}; do
-  [[ -f "$f" ]] || {
-    log "❌ Template file not found: $f"
-    exit 2
-  }
-done
+[[ -f "themes/${THEME}.svg" ]] || {
+  log "❌ Theme file not found: $THEME"
+  exit 2
+}
 
 # ───────────────[ SETUP ]───────────────
 TMP=$(mktemp -d)
@@ -147,74 +127,38 @@ mkdir -p "${OUTPUT_DIR}" &>/dev/null || :
 # ───────────────[ FONTS ]───────────────
 function load_font {
   trace_enter load_font
-  log "Loading fonts..."
+  log "Loading fonts from theme..."
   mkdir -p "$FONT_DEST"
 
-  FONT_HEAD="sans-serif"
-  FONT_BODY="sans-serif"
-  FONT_LANG="sans-serif"
-  FONT_STAT="monospace"
+  local theme_svg="themes/${THEME}.svg"
 
-  for font_def in $FONTS; do
-    [[ "$font_def" == *=* ]] || {
-      log "Invalid font format: $font_def"
-      continue
-    }
-    section="${font_def%%=*}"
-    url="${font_def#*=}"
-
-    [[ -z "$section" || -z "$url" ]] && {
-      log "Missing component in font definition: $font_def"
-      continue
-    }
-
-    [[ ! "$section" =~ ^(head|body|lang|stat)$ ]] && {
-      log "Invalid section '$section' (must be head, body, lang, or stat)"
-      continue
-    }
-
-    [[ ! "$url" =~ \.ttf$ ]] && {
-      log "URL must end with .ttf: $url"
-      continue
-    }
-
+  while read -r url; do
+    [ -z "$url" ] && continue
     filename="$(md5 <<<"$url").ttf"
     font_path="$FONT_DEST/$filename"
-
-    if [[ ! -f "$font_path" ]]; then
+    if [ ! -f "$font_path" ]; then
       log "Downloading font: $url"
-      curl -f -o "$font_path" "$url" || {
+      log "Font path: $font_path"
+      curl -f -L -o "$font_path" "$url" || {
         log "❌ Failed to download font: $url"
         continue
       }
     else
       log "Font already exists: $filename"
     fi
-
-    font_family=$(fc-scan --format='%{fullname}, %{family}\n' "$font_path" | head -n1)
-    # font_family=${font_family:-$(basename "$url" .ttf)}
-    # echo "::::::::::: $section ::::: $font_family"
-
-    case "$section" in
-    head) FONT_HEAD="$font_family" ;;
-    body) FONT_BODY="$font_family" ;;
-    lang) FONT_LANG="$font_family" ;;
-    stat) FONT_STAT="$font_family" ;;
-    esac
-  done
+  done < <(sed -n 's/<!-- FONT::\(.*\) -->/\1/p' "$theme_svg")
 
   fc-cache -f
-  export FONT_HEAD FONT_BODY FONT_LANG FONT_STAT
-  log "Font families: HEAD='$FONT_HEAD' BODY='$FONT_BODY' LANG='$FONT_LANG' STAT='$FONT_STAT'"
+
   trace_exit load_font
 }
 
-# ───────────────[ LOGO ]───────────────
-function load_logo {
-  trace_enter load_logo
+# ───────────────[ AVATAR ]───────────────
+function load_avatar {
+  trace_enter load_avatar
   local style="" args=()
 
-  for pair in $LOGO; do
+  for pair in $AVATAR; do
     k=${pair%%=*}
     v=${pair#*=}
     # shellcheck disable=SC2206
@@ -231,21 +175,7 @@ function load_logo {
 
   printf '<image x="0" y="0" width="64" height="64" 
     href="data:image/svg+xml;base64,%s"/>' "$(base64 -w0 <"$svg")"
-  trace_exit load_logo
-}
-
-# ───────────────[ THEME ]───────────────
-function load_theme {
-  local scheme="${1:?BAD}"
-  set -a
-  # shellcheck disable=SC1090
-  source <(
-    {
-      cat "templates/${TEMPLATE}.env"
-      tr ' ' '\n' <<<"$OVERRIDES"
-    } | sed "/^$/d;s/${scheme^^}_//g"
-  )
-  set +a
+  trace_exit load_avatar
 }
 
 # ───────────────[ POS ]───────────────
@@ -264,23 +194,6 @@ function trunc {
   [[ -z $cut ]] && cut="${text:0:max_chars}"
 
   echo "${cut}${ellipsis}"
-}
-
-function svg_text_width {
-  local text="$1" font="$2" size="$3"
-  local avg_width=14
-  echo $((${#text} * avg_width))
-}
-
-function pill_metrics {
-  trace_enter pill_metrics
-  local prefix="$1" text="$2" font="$3" size="$4" padding="$5"
-  local width center
-  width=$(svg_text_width "$text" "$font" "$size")
-  width=$((${width%.*} + 2 * padding))
-  center=$((width / 2))
-  export "${prefix}_RW"="$width" "${prefix}_RX"=0 "${prefix}_TX"="$center"
-  trace_exit pill_metrics
 }
 
 # ───────────────[ REPO ]───────────────
@@ -324,25 +237,23 @@ function generate {
   IFS=$'\t' read -r name desc lang star fork < <(jq -r '[.name, .desc, .lang, .star, .fork] | @tsv' <<<"$1")
 
   load_font
-  pill_metrics LANG "$lang" "$FONT_LANG" 24 16
   lang="&#32;${lang}&#32;"
 
   repo="${name}"
   name=$(trunc "$name" 390 32)
   desc=$(trunc "$desc" 1800 26)
 
-  export name desc lang star fork logo
+  export name desc lang star fork avatar
 
-  logo="$(load_logo "${repo}")"
+  avatar="$(load_avatar "${repo}")"
 
-  export name desc lang star fork logo
+  export name desc lang star fork avatar
 
   for scheme in light dark; do
     log "loading $scheme $repo"
-    load_theme "$scheme"
     filename="card_${repo}_${scheme}"
 
-    envsubst <"templates/${TEMPLATE}.svg" >"${TMP}/${filename}.svg"
+    sed "s/__THEME__/theme-${scheme}/" "themes/${THEME}.svg" | envsubst >"${TMP}/${filename}.svg"
 
     inkscape "${TMP}/${filename}.svg" \
       --export-dpi=300 \
@@ -354,8 +265,8 @@ function generate {
   trace_exit generate
 }
 
-# ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶
-logheader TMP DEV OWNER REPOS OVERRIDES FONTS OUTPUT_DIR TEMPLATE
+# ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶ ╴╶
+logheader TMP DEV OWNER REPOS THEME OUTPUT_DIR
 
 # ───────────────[ DRIVER ]───────────────
 for repo in $REPOS; do

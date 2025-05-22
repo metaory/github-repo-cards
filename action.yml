@@ -1,5 +1,5 @@
 name: 'GitHub Repo Cards'
-description: 'GitHub Action to generate sleek, static, customizable PNG cards for your repositories—fully offline, no servers, no embeds, no runtime dependencies.'
+description: 'Generate sleek, static PNG cards for your repositories—fully offline, theme-based, no font or layout config.'
 author: 'metaory'
 
 inputs:
@@ -7,27 +7,23 @@ inputs:
     description: 'List of repository names (newline-separated, username not required)'
     required: true
 
-  overrides:
-    description: 'Style overrides in the form KEY=value. Can be multiple per line. Prefix with LIGHT_ or DARK_ for theme-specific values, e.g. DARK_BG=#181825 LIGHT_FG=#cdd6f4 LANG_RADIUS=24 LANG_BORDER_WIDTH=8'
+  theme:
+    description: 'SVG theme to use (default: default)'
     required: false
-
-  fonts:
-    description: 'Optional: Section-specific font config. Each line: section=url-to-ttf (see README). Sections: head, body, lang, stat.'
-    required: false
-
-  logo:
-    description: 'Optional: DiceBear avatar configuration options. Style parameter is required (e.g. style=glass). See https://www.dicebear.com/styles/'
-    required: false
+    default: 'default'
 
   output:
-    description: 'Output directory to save the cards'
+    description: 'Output directory for generated cards (default: cards)'
     required: false
     default: 'cards'
 
-  template:
-    description: 'SVG template/layout preset (default: default)'
+  avatar:
+    description: 'Optional: DiceBear avatar style and options (see https://www.dicebear.com/styles/)'
     required: false
-    default: 'default'
+
+  accent:
+    description: 'Optional: Accent color variable (if supported by theme)'
+    required: false
 
 runs:
   using: 'composite'
@@ -48,20 +44,15 @@ runs:
       shell: bash
       run: npm install dicebear --global
 
-    - name: Create temp directory
-      shell: bash
-      run: mkdir -p /tmp/repo-cards
-
     - name: Run card generator
       shell: bash
       run: |
         scripts/generate.sh \
           --repos "$(tr '\n' ' ' <<< "${{ inputs.repositories }}")" \
-          --overrides "$(tr '\n' ' ' <<< "${{ inputs.overrides }}")" \
-          --fonts "$(tr '\n' ' ' <<< "${{ inputs.fonts }}")" \
-          --logo "$(tr '\n' ' ' <<< "${{ inputs.logo }}")" \
+          --avatar "$(tr '\n' ' ' <<< "${{ inputs.avatar }}")" \
           --output "${{ inputs.output }}" \
-          --template "${{ inputs.template }}"
+          --theme "${{ inputs.theme }}" \
+          ${INPUT_ACCENT:+--overrides ACCENT=${{ inputs.accent }}}
       env:
         GITHUB_TOKEN: ${{ github.token }}
 

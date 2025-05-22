@@ -1,0 +1,131 @@
+<!-- FONT::https://cdn.jsdelivr.net/fontsource/fonts/bungee-shade@latest/latin-400-normal.ttf -->
+<!-- FONT::https://cdn.jsdelivr.net/fontsource/fonts/baloo-2@latest/latin-400-normal.ttf -->
+<!-- FONT::https://cdn.jsdelivr.net/fontsource/fonts/blackout-two-am@latest/latin-400-normal.ttf -->
+<!-- FONT::https://cdn.jsdelivr.net/fontsource/fonts/rampart-one@latest/latin-400-normal.ttf -->
+
+<svg width="450" height="300" viewBox="0 0 450 300" fill="none" xmlns="http://www.w3.org/2000/svg" class="__THEME__">
+    <style>
+        .theme-light .bg {
+            fill: #FFDDEE;
+        }
+
+        .theme-dark .bg {
+            fill: #220033;
+        }
+
+        .theme-light .head-text {
+            fill: #330044;
+            stroke: #330044;
+            stroke-width: 0;
+            font-family: 'Bungee Shade', sans-serif;
+            font-size: 32px;
+            font-weight: 400;
+        }
+
+        .theme-dark .head-text {
+            fill: #FFCCDD;
+            stroke: #FFCCDD;
+            stroke-width: 0.4;
+            font-family: 'Bungee Shade', sans-serif;
+            font-size: 32px;
+            font-weight: 400;
+        }
+
+        .theme-light .body-text {
+            fill: #110022;
+            font-family: 'Baloo 2', sans-serif;
+            font-size: 26px;
+            font-weight: 400;
+        }
+
+        .theme-dark .body-text {
+            fill: #FFCCDD;
+            font-family: 'Baloo 2', sans-serif;
+            font-size: 26px;
+            font-weight: 400;
+        }
+
+        .theme-light .lang-pill {
+            fill: #FFDDEE;
+            stroke: #330044;
+            stroke-width: 8;
+            fill-opacity: 0;
+            stroke-opacity: 0;
+            rx: 24;
+        }
+
+        .theme-dark .lang-pill {
+            fill: #220033;
+            stroke: #220033;
+            stroke-width: 8;
+            fill-opacity: 0;
+            stroke-opacity: 0;
+            rx: 24;
+        }
+
+        .theme-light .lang-text {
+            fill: #FFDDEE;
+            font-family: 'Blackout Two AM', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .theme-dark .lang-text {
+            fill: #FFCCDD;
+            font-family: 'Blackout Two AM', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .theme-light .stat-icon {
+            fill: #330044;
+        }
+
+        .theme-dark .stat-icon {
+            fill: #6611FF;
+        }
+
+        .theme-light .stat-text {
+            fill: #FFDDEE;
+            font-family: 'Rampart One', monospace;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .theme-dark .stat-text {
+            fill: #FFCCDD;
+            font-family: 'Rampart One', monospace;
+            font-size: 20px;
+            font-weight: 700;
+        }
+    </style>
+    <rect class="bg" x="0" y="0" width="450" height="300" rx="24" />
+    <g id="head" transform="translate(16,16)">
+        ${logo}
+        <flowRoot>
+            <flowRegion>
+                <rect x="80" y="10" width="335" height="100" />
+            </flowRegion>
+            <flowPara class="head-text">${name}</flowPara>
+        </flowRoot>
+    </g>
+    <flowRoot id="body" transform="translate(15,110)">
+        <flowRegion>
+            <rect x="0" y="0" width="420" height="135" />
+        </flowRegion>
+        <flowPara class="body-text">${desc}</flowPara>
+    </flowRoot>
+    <g id="stat" transform="translate(40,240)">
+        <text class="lang-text" x="60" y="32" text-anchor="middle">${lang}</text>
+        <g id="star" transform="translate(200, 4) scale(1.4)">
+            <path class="stat-icon"
+                d="m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08z" />
+            <text class="stat-text" x="26" y="20" dominant-baseline="top">${star}</text>
+        </g>
+        <g id="fork" transform="translate(320, 8) scale(1.4)">
+            <path class="stat-icon"
+                d="M8 18a1 1 0 1 0 0-2a1 1 0 0 0 0 2m1.033-3.817A3.001 3.001 0 1 1 7 14.17v-1.047q0-.111.008-.221a1 1 0 0 0-.462-.637L3.46 10.42A3 3 0 0 1 2 7.845V5.829a3.001 3.001 0 1 1 2 0v2.016a1 1 0 0 0 .487.858l3.086 1.846a3 3 0 0 1 .443.324a3 3 0 0 1 .444-.324l3.086-1.846a1 1 0 0 0 .487-.858V5.841A3.001 3.001 0 0 1 13 0a3 3 0 0 1 1.033 5.817v2.028a3 3 0 0 1-1.46 2.575l-3.086 1.846a1 1 0 0 0-.462.637q.008.11.008.22zM3 4a1 1 0 1 0 0-2a1 1 0 0 0 0 2m10 0a1 1 0 1 0 0-2a1 1 0 0 0 0 2" />
+            <text class="stat-text" x="22" y="16" dominant-baseline="top">${fork}</text>
+        </g>
+    </g>
+</svg>
