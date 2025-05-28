@@ -1,0 +1,84 @@
+name: 'GitHub Repo Cards'
+description: 'Generate sleek, static PNG cards for your repositories—fully offline, theme-based, no font or layout config.'
+author: 'metaory'
+
+inputs:
+  repositories:
+    description: 'List of repository names (newline-separated, username not required)'
+    required: true
+
+  theme:
+    description: 'SVG theme to use (default: default). Can be a theme name or a path to a user SVG.'
+    required: false
+    default: 'default'
+
+  output:
+    description: 'Output directory for generated cards (default: cards)'
+    required: false
+    default: 'cards'
+
+  avatar:
+    description: 'Optional: DiceBear avatar style and options (see https://www.dicebear.com/styles/)'
+    required: false
+
+  accent:
+    description: 'Optional: Accent color variable (if supported by theme)'
+    required: false
+
+  format:
+    description: 'Format: svg (default, text as paths) or png'
+    required: false
+    default: 'svg'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install jq
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y jq
+
+    - name: Install curl
+      shell: bash
+      run: sudo apt-get install -y curl
+
+    - name: Install Inkscape
+      shell: bash
+      run: sudo apt-get install -y inkscape
+
+    - name: Install Logo maker
+      shell: bash
+      run: npm install dicebear --global
+
+    - name: Install xmllint
+      run: sudo apt-get install -y libxml2-utils
+
+    - name: Run card generator
+      shell: bash
+      run: |
+        scripts/generate.sh \
+          --repos "$(tr '\n' ' ' <<< "${{ inputs.repositories }}")" \
+          --avatar "$(tr '\n' ' ' <<< "${{ inputs.avatar }}")" \
+          --output "${{ inputs.output }}" \
+          --theme "${{ inputs.theme }}" \
+          --format "${{ inputs.format }}" \
+          ${INPUT_ACCENT:+--overrides ACCENT=${{ inputs.accent }}}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Commit and push changes
+      shell: bash
+      run: |
+        if [[ -n "$(git status --porcelain ${{ inputs.output }})" ]]; then
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git add ${{ inputs.output }}
+          git commit -m "chore: update repository cards"
+          git push
+          echo "✅ Changes committed and pushed"
+        else
+          echo "No changes to commit"
+        fi
+
+branding:
+  icon: 'image'
+  color: 'green'

@@ -21,17 +21,18 @@ jobs:
           fetch-depth: 1
 
       - name: Generate repository cards
-        uses: metaory@repo-card-generator
+        uses: metaory/github-repo-cards@v1
         with:
           repositories: |
             repo-cards
             dotfiles
-          overrides: |
-            DARK_BG=#F6FFFA
-            DARK_FG=#222333
-            DARK_HL=#FF88EE
-            RADIUS=10
-            BORDER=7
-          output: cards
+          theme: default   # Pick a theme SVG (default: default)
+          output: cards       # Output directory (default: cards)
+          format: svg    # svg (default, text as paths) or png
+          # accent: '#FF88EE' # Optional accent color
+          avatar: |
+            style=glass
+            radius=28
+            backgroundType=gradientLinear
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,95 @@
+
+<!-- FONT::https://cdn.jsdelivr.net/fontsource/fonts/rubik-vinyl@latest/latin-400-normal.ttf -->
+<!-- FONT::https://cdn.jsdelivr.net/fontsource/fonts/bungee@latest/latin-400-normal.ttf -->
+<!-- FONT::https://cdn.jsdelivr.net/fontsource/fonts/comfortaa@latest/latin-400-normal.ttf -->
+
+<svg width="450" height="300" viewBox="0 0 450 300" fill="none" xmlns="http://www.w3.org/2000/svg" class="__THEME__">
+    <style>
+        :root {
+            --l1: #FFDDEE;
+            --l2: #FFCCDD;
+            --d1: #220033;
+            --d2: #330044;
+            --d3: #110022;
+            --accent: #6611FF;
+            --radius: 24;
+        }
+
+        .head {
+            font-family: 'Bungee', sans-serif;
+            font-size: 32px;
+            font-weight: 400;
+        }
+
+        .body {
+            font-family: 'comfortaa', sans-serif;
+            font-size: 26px;
+            font-weight: 400;
+        }
+
+        .pill {
+            stroke-width: 4;
+        }
+
+        .lang {
+            font-family: 'Rubik Vinyl', sans-serif;
+            font-size: 24px;
+            font-weight: 400;
+        }
+
+        .stat {
+            font-family: 'Rubik Vinyl', monospace;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .light {
+            .bg { fill: var(--l1); }
+            .head { fill: var(--d2); stroke: var(--d2); }
+            .pill { fill: var(--l2); stroke: var(--l2); }
+            .lang { fill: var(--d2); stroke: var(--d2); }
+            .icon { fill: var(--l2); stroke: none; }
+            .stat { fill: var(--d2); stroke: var(--d2); }
+            .body { fill: var(--d3); }
+        }
+
+        .dark {
+            .bg { fill: var(--d1); }
+            .head { fill: var(--l2); stroke: var(--l2); }
+            .pill { fill: var(--d2); stroke: var(--d2); }
+            .body { fill: var(--l2); }
+            .icon { fill: var(--d2); stroke: none; }
+            .lang { fill: var(--l1); stroke: none; }
+            .stat { fill: var(--l2); stroke: none; }
+        }
+    </style>
+    <rect id="bg" class="bg" x="0" y="0" width="450" height="300" rx="24" />
+    <g id="header-group" transform="translate(16,32)">
+        <image id="avatar-img" x="0" y="0" width="64" height="64" href="data:image/svg+xml;base64,${avatar}" />
+        <text id="repo-title" class="head" x="88" y="32" alignment-baseline="middle">
+            ${name_tspans}
+        </text>
+    </g>
+    <g id="desc-group" transform="translate(15,110)">
+        <text id="repo-desc" class="body" x="0" y="26" textLength="1500">
+            ${desc_tspans}
+        </text>
+    </g>
+    <g id="stat-row" transform="translate(0,240)">
+        <g id="lang-pill-group" transform="translate(40,0)">
+            <text id="lang-text" class="lang" x="${lang_x}" y="26" text-anchor="middle">${lang}</text>
+        </g>
+        <g id="stat-group" transform="translate(${stat_x},4)">
+            <g id="stat-star" transform="scale(1.4)">
+                <path class="icon"
+                    d="m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08z" />
+                <text class="stat" x="26" y="16" dominant-baseline="top">${star}</text>
+            </g>
+            <g id="stat-fork" transform="translate(86,2) scale(1.4)">
+                <path class="icon"
+                    d="M8 18a1 1 0 1 0 0-2a1 1 0 0 0 0 2m1.033-3.817A3.001 3.001 0 1 1 7 14.17v-1.047q0-.111.008-.221a1 1 0 0 0-.462-.637L3.46 10.42A3 3 0 0 1 2 7.845V5.829a3.001 3.001 0 1 1 2 0v2.016a1 1 0 0 0 .487.858l3.086 1.846a3 3 0 0 1 .443.324a3 3 0 0 1 .444-.324l3.086-1.846a1 1 0 0 0 .487-.858V5.841A3.001 3.001 0 0 1 13 0a3 3 0 0 1 1.033 5.817v2.028a3 3 0 0 1-1.46 2.575l-3.086 1.846a1 1 0 0 0-.462.637q.008.11.008.22zM3 4a1 1 0 1 0 0-2a1 1 0 0 0 0 2m10 0a1 1 0 1 0 0-2a1 1 0 0 0 0 2" />
+                <text class="stat" x="22" y="16" dominant-baseline="top">${fork}</text>
+            </g>
+        </g>
+    </g>
+</svg>
