@@ -13,9 +13,21 @@
         <img alt="Version" src="https://img.shields.io/github/v/tag/metaory/github-repo-cards">
       </a>
     </p>
-    <img src="cards/card_repo-card-generator_dark.png" alt="card_repo-card-generator-dark" width="40%" />
+    <img src="https://raw.githubusercontent.com/metaory/github-repo-cards/refs/heads/demo/cards/card_default_dark.png" width="40%" />
     &nbsp;
-    <img src="cards/card_repo-card-generator_light.png" alt="card_repo-card-generator-light" width="40%" />
+    <img src="https://raw.githubusercontent.com/metaory/github-repo-cards/refs/heads/demo/cards/card_default_light.png" width="40%" />
+    <br>
+    <img src="https://raw.githubusercontent.com/metaory/github-repo-cards/refs/heads/demo/cards/card_highlight_dark.png" width="40%" />
+    &nbsp;
+    <img src="https://raw.githubusercontent.com/metaory/github-repo-cards/refs/heads/demo/cards/card_highlight_light.png" width="40%" />
+    <br>
+    <img src="https://raw.githubusercontent.com/metaory/github-repo-cards/refs/heads/demo/cards/card_pixel_dark.png" width="40%" />
+    &nbsp;
+    <img src="https://raw.githubusercontent.com/metaory/github-repo-cards/refs/heads/demo/cards/card_pixel_light.png" width="40%" />
+    <br>
+    <img src="https://raw.githubusercontent.com/metaory/github-repo-cards/refs/heads/demo/cards/card_rubik_dark.png" width="40%" />
+    &nbsp;
+    <img src="https://raw.githubusercontent.com/metaory/github-repo-cards/refs/heads/demo/cards/card_rubik_light.png" width="40%" />
 </div>
 
 ---
